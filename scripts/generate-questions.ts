@@ -4,11 +4,12 @@
 // Optional: npx tsx scripts/generate-questions.ts --domain "Cloud Concepts" --difficulty easy --count 10
 
 import Anthropic from "@anthropic-ai/sdk";
-import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
+import { Pool } from "pg";
 import { z } from "zod/v4";
+
 import {
   DOMAINS,
   DIFFICULTIES,
@@ -37,7 +38,7 @@ const QuestionSchema = z.object({
       z.object({
         key: z.enum(["A", "B", "C", "D"]),
         text: z.string().min(1),
-      })
+      }),
     )
     .length(4),
   correctOption: z.enum(["A", "B", "C", "D"]),
@@ -57,7 +58,7 @@ const stats = {
 async function generateBatch(
   domain: Domain,
   difficulty: Difficulty,
-  count: number
+  count: number,
 ): Promise<z.infer<typeof QuestionSchema>[]> {
   const prompt = buildQuestionPrompt(domain, difficulty, count);
 
@@ -73,7 +74,9 @@ async function generateBatch(
   // Extract JSON — handle cases where model wraps in markdown fences
   const jsonMatch = text.match(/\[[\s\S]*\]/);
   if (!jsonMatch) {
-    throw new Error(`No JSON array found in response for ${domain}/${difficulty}`);
+    throw new Error(
+      `No JSON array found in response for ${domain}/${difficulty}`,
+    );
   }
 
   const parsed = JSON.parse(jsonMatch[0]);
@@ -84,7 +87,7 @@ async function generateBatch(
 async function insertQuestions(
   questions: z.infer<typeof QuestionSchema>[],
   domain: Domain,
-  difficulty: Difficulty
+  difficulty: Difficulty,
 ): Promise<number> {
   let count = 0;
   for (const q of questions) {
@@ -106,7 +109,7 @@ async function insertQuestions(
 async function generateForDomainDifficulty(
   domain: Domain,
   difficulty: Difficulty,
-  targetCount: number
+  targetCount: number,
 ) {
   console.log(`\n--- ${domain} / ${difficulty} (target: ${targetCount}) ---`);
 
@@ -125,25 +128,32 @@ async function generateForDomainDifficulty(
       const inserted = await insertQuestions(questions, domain, difficulty);
       stats.inserted += inserted;
       remaining -= inserted;
-      console.log(`  Batch ${batchNum}: ✓ ${inserted} inserted (${remaining} remaining)`);
+      console.log(
+        `  Batch ${batchNum}: ✓ ${inserted} inserted (${remaining} remaining)`,
+      );
     } catch (error) {
       stats.failed++;
       if (error instanceof z.ZodError) {
         stats.validationErrors++;
-        console.error(`  Batch ${batchNum}: ✗ validation error:`, error.issues[0]?.message);
+        console.error(
+          `  Batch ${batchNum}: ✗ validation error:`,
+          error.issues[0]?.message,
+        );
       } else if (error instanceof SyntaxError) {
         stats.validationErrors++;
         console.error(`  Batch ${batchNum}: ✗ JSON parse error`);
       } else {
         console.error(
           `  Batch ${batchNum}: ✗ error:`,
-          error instanceof Error ? error.message : error
+          error instanceof Error ? error.message : error,
         );
       }
       // Retry logic: continue to next batch, remaining stays the same
       // After 3 consecutive failures for the same domain/difficulty, skip
       if (stats.failed >= 3) {
-        console.error(`  Skipping remaining ${remaining} for ${domain}/${difficulty} after 3 failures`);
+        console.error(
+          `  Skipping remaining ${remaining} for ${domain}/${difficulty} after 3 failures`,
+        );
         break;
       }
     }
@@ -167,11 +177,13 @@ async function main() {
     await generateForDomainDifficulty(
       domainArg as Domain,
       difficultyArg,
-      parseInt(countArg)
+      parseInt(countArg),
     );
   } else {
     // Full generation: weighted distribution
-    console.log("\nFull generation: 600 questions (weighted CLF-C02 distribution)");
+    console.log(
+      "\nFull generation: 600 questions (weighted CLF-C02 distribution)",
+    );
     for (const domain of DOMAINS) {
       for (const difficulty of DIFFICULTIES) {
         const count = getQuestionCount(domain, difficulty);

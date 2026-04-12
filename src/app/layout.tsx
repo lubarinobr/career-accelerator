@@ -1,8 +1,10 @@
-import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { SessionWrapper } from "@/components/SessionWrapper";
-import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+
+import type { Metadata, Viewport } from "next";
+
 import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
+import { SessionWrapper } from "@/components/SessionWrapper";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,7 +36,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.className} h-full`}>
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900 overflow-x-hidden">
+      <body className="flex min-h-full flex-col overflow-x-hidden bg-gray-50 text-gray-900">
         <SessionWrapper>
           <main className="flex-1">{children}</main>
         </SessionWrapper>

@@ -2,12 +2,13 @@
 // Exports all questions from DB to data/questions-export.csv for CEO spot-check
 // Usage: npx tsx scripts/export-questions.ts
 
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
-import dotenv from "dotenv";
 import { writeFileSync, mkdirSync } from "fs";
 import { join } from "path";
+
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+import { Pool } from "pg";
 
 dotenv.config({ path: ".env.local" });
 
@@ -84,7 +85,9 @@ async function main() {
   console.log("\nDistribution:");
   for (const [domain, diffs] of Object.entries(dist)) {
     const total = Object.values(diffs).reduce((a, b) => a + b, 0);
-    console.log(`  ${domain}: ${total} (easy: ${diffs["easy"] ?? 0}, medium: ${diffs["medium"] ?? 0}, hard: ${diffs["hard"] ?? 0})`);
+    console.log(
+      `  ${domain}: ${total} (easy: ${diffs["easy"] ?? 0}, medium: ${diffs["medium"] ?? 0}, hard: ${diffs["hard"] ?? 0})`,
+    );
   }
 
   await prisma.$disconnect();

@@ -3,6 +3,7 @@
 // Validates user can afford it first.
 
 import { NextResponse } from "next/server";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { canAffordStreakFreeze, calculateStreakFreezeCost } from "@/lib/xp";
@@ -31,7 +32,7 @@ export async function POST() {
         required: calculateStreakFreezeCost(),
         current: user.totalXp,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

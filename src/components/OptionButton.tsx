@@ -1,6 +1,11 @@
 "use client";
 
-export type OptionState = "default" | "selected" | "correct" | "wrong" | "dimmed";
+export type OptionState =
+  | "default"
+  | "selected"
+  | "correct"
+  | "wrong"
+  | "dimmed";
 
 interface OptionButtonProps {
   optionKey: string;
@@ -11,16 +16,11 @@ interface OptionButtonProps {
 }
 
 const stateStyles: Record<OptionState, string> = {
-  default:
-    "border-gray-200 bg-white text-gray-900 active:scale-[0.98]",
-  selected:
-    "border-blue-500 bg-blue-50 text-blue-900 ring-2 ring-blue-500",
-  correct:
-    "border-green-500 bg-green-50 text-green-900 ring-2 ring-green-500",
-  wrong:
-    "border-red-500 bg-red-50 text-red-900 ring-2 ring-red-500",
-  dimmed:
-    "border-gray-200 bg-gray-50 text-gray-400",
+  default: "border-gray-200 bg-white text-gray-900 active:scale-[0.98]",
+  selected: "border-blue-500 bg-blue-50 text-blue-900 ring-2 ring-blue-500",
+  correct: "border-green-500 bg-green-50 text-green-900 ring-2 ring-green-500",
+  wrong: "border-red-500 bg-red-50 text-red-900 ring-2 ring-red-500",
+  dimmed: "border-gray-200 bg-gray-50 text-gray-400",
 };
 
 export function OptionButton({

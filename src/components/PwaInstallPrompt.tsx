@@ -49,7 +49,7 @@ export function PwaInstallPrompt() {
   if (!show) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 mx-auto max-w-md p-3">
+    <div className="fixed top-0 right-0 left-0 z-50 mx-auto max-w-md p-3">
       <div className="flex items-center gap-3 rounded-xl bg-blue-800 px-4 py-3 text-white shadow-lg">
         <div className="flex-1">
           <p className="text-sm font-semibold">Install Career Accelerator</p>
@@ -68,8 +68,18 @@ export function PwaInstallPrompt() {
           className="p-1 text-blue-200 hover:text-white"
           aria-label="Dismiss"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18 18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>

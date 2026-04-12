@@ -23,7 +23,10 @@ export const DOMAIN_WEIGHTS: Record<Domain, number> = {
 };
 
 // Per-difficulty split within each domain (roughly equal thirds)
-export function getQuestionCount(domain: Domain, difficulty: Difficulty): number {
+export function getQuestionCount(
+  domain: Domain,
+  difficulty: Difficulty,
+): number {
   const total = DOMAIN_WEIGHTS[domain];
   const third = Math.floor(total / 3);
   // Give any remainder to medium
@@ -52,7 +55,7 @@ const DOMAIN_TOPICS: Record<Domain, string> = {
 export function buildQuestionPrompt(
   domain: Domain,
   difficulty: Difficulty,
-  count: number
+  count: number,
 ): string {
   return `You are an expert AWS certification instructor creating practice questions for the AWS Cloud Practitioner (CLF-C02) exam.
 
@@ -94,7 +97,7 @@ export function buildFeedbackPrompt(
   options: { key: string; text: string }[],
   userAnswer: string,
   correctAnswer: string,
-  explanation: string
+  explanation: string,
 ): string {
   const optionsText = options.map((o) => `${o.key}. ${o.text}`).join("\n");
 

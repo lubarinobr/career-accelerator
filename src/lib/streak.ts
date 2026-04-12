@@ -40,7 +40,7 @@ export function calculateStreak(
   currentStreak: number,
   longestStreak: number,
   freezeUsedDate: string | null,
-  hasFreezesAvailable: boolean
+  hasFreezesAvailable: boolean,
 ): StreakResult {
   // First time ever — no previous activity
   if (!lastActiveDate) {

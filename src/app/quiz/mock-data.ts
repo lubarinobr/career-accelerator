@@ -8,8 +8,7 @@ const MOCK_QUESTIONS: QuizQuestion[] = [
     id: "mock-1",
     domain: "Cloud Concepts",
     difficulty: "easy",
-    questionText:
-      "Which of the following best describes cloud computing?",
+    questionText: "Which of the following best describes cloud computing?",
     options: [
       {
         key: "A",
@@ -46,8 +45,7 @@ const MOCK_QUESTIONS: QuizQuestion[] = [
     id: "mock-3",
     domain: "Cloud Technology and Services",
     difficulty: "medium",
-    questionText:
-      "What is the purpose of Amazon S3?",
+    questionText: "What is the purpose of Amazon S3?",
     options: [
       { key: "A", text: "Running virtual servers" },
       { key: "B", text: "Object storage service" },
@@ -84,7 +82,10 @@ const MOCK_QUESTIONS: QuizQuestion[] = [
 ];
 
 // Mock correct answers (simulates the server knowing the correct option)
-const MOCK_ANSWERS: Record<string, { correctOption: string; explanation: string }> = {
+const MOCK_ANSWERS: Record<
+  string,
+  { correctOption: string; explanation: string }
+> = {
   "mock-1": {
     correctOption: "A",
     explanation:
@@ -120,7 +121,7 @@ export async function mockFetchQuestions(): Promise<QuizQuestion[]> {
 
 export async function mockSubmitAnswer(
   questionId: string,
-  selectedOption: string
+  selectedOption: string,
 ): Promise<AnswerResponse> {
   // Simulate network latency
   await new Promise((resolve) => setTimeout(resolve, 300));

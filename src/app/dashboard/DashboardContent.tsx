@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+
 import type { UserStats } from "@/types";
-import { api } from "@/lib/api";
+
+import { BottomNav } from "@/components/BottomNav";
+import { LevelBadge } from "@/components/LevelBadge";
 import { StreakBadge } from "@/components/StreakBadge";
 import { XPBar } from "@/components/XPBar";
-import { LevelBadge } from "@/components/LevelBadge";
-import { BottomNav } from "@/components/BottomNav";
+import { api } from "@/lib/api";
 
 export function DashboardContent() {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -62,7 +64,10 @@ export function DashboardContent() {
         <p className="text-gray-500">Failed to load dashboard.</p>
         <button
           type="button"
-          onClick={() => { setLoading(true); fetchStats(); }}
+          onClick={() => {
+            setLoading(true);
+            fetchStats();
+          }}
           className="mt-3 text-sm font-medium text-blue-600 underline"
         >
           Retry
@@ -115,7 +120,9 @@ export function DashboardContent() {
 
         {/* Today's activity */}
         <div className="mt-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase">Today</h3>
+          <h3 className="text-sm font-semibold text-gray-500 uppercase">
+            Today
+          </h3>
           {stats.todayActivity ? (
             <div className="mt-2 flex gap-6">
               <div>
@@ -132,7 +139,9 @@ export function DashboardContent() {
               </div>
             </div>
           ) : (
-            <p className="mt-2 text-sm text-gray-400">No activity yet. Start a quiz!</p>
+            <p className="mt-2 text-sm text-gray-400">
+              No activity yet. Start a quiz!
+            </p>
           )}
         </div>
 
@@ -154,7 +163,7 @@ export function DashboardContent() {
               className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
                 canAffordFreeze && !buyingFreeze
                   ? "bg-blue-600 text-white active:scale-[0.98]"
-                  : "bg-gray-200 text-gray-400 cursor-default"
+                  : "cursor-default bg-gray-200 text-gray-400"
               }`}
             >
               {buyingFreeze ? "Buying..." : "Buy (50 XP)"}

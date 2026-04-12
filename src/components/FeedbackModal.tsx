@@ -62,7 +62,9 @@ export function FeedbackModal({
               {isCorrect ? "Correct!" : "Wrong"}
             </h2>
             {result.xpEarned > 0 && (
-              <p className={`text-sm font-semibold ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+              <p
+                className={`text-sm font-semibold ${isCorrect ? "text-green-600" : "text-red-600"}`}
+              >
                 +{result.xpEarned} XP
               </p>
             )}

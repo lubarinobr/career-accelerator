@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 @keyframes pulse-flame {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .animate-pulse-flame {

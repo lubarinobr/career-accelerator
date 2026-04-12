@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { QuizQuestion, QuizResponse, AnswerResponse } from "@/types";
+import { useState, useCallback } from "react";
+
 import type { OptionState } from "@/components/OptionButton";
-import { QuizCard } from "@/components/QuizCard";
-import { OptionButton } from "@/components/OptionButton";
+import type { QuizQuestion, QuizResponse, AnswerResponse } from "@/types";
+
 import { FeedbackModal } from "@/components/FeedbackModal";
-import { ProgressBar } from "@/components/ProgressBar";
 import { LessonComplete } from "@/components/LessonComplete";
+import { OptionButton } from "@/components/OptionButton";
+import { ProgressBar } from "@/components/ProgressBar";
+import { QuizCard } from "@/components/QuizCard";
 import { api } from "@/lib/api";
 
 type QuizPhase = "loading" | "question" | "feedback" | "complete" | "error";
@@ -50,7 +52,9 @@ export function QuizFlow() {
       }
       const data: QuizResponse = await res.json();
       if (data.questions.length === 0) {
-        setErrorMessage(data.message ?? "No questions available. Check back later!");
+        setErrorMessage(
+          data.message ?? "No questions available. Check back later!",
+        );
         setPhase("error");
         return;
       }
@@ -259,7 +263,7 @@ export function QuizFlow() {
           className={`w-full rounded-xl py-4 text-lg font-bold text-white transition-all active:scale-[0.98] ${
             selectedOption && !isSubmitting
               ? "bg-blue-600"
-              : "bg-gray-300 cursor-default"
+              : "cursor-default bg-gray-300"
           }`}
         >
           {isSubmitting ? "Checking..." : "Check"}

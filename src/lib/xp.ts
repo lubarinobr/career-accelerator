@@ -23,7 +23,7 @@ export function calculateAnswerXP(isCorrect: boolean): number {
 
 export function calculateLessonBonusXP(
   correctCount: number,
-  totalCount: number
+  totalCount: number,
 ): number {
   return correctCount === totalCount && totalCount === PERFECT_LESSON_SIZE
     ? XP_PERFECT_BONUS
@@ -57,7 +57,7 @@ export function calculateLevel(totalXp: number): LevelInfo {
   }
 
   const currentLevelIndex = LEVEL_THRESHOLDS.findIndex(
-    (t) => t.level === currentLevel.level
+    (t) => t.level === currentLevel.level,
   );
   const nextLevel = LEVEL_THRESHOLDS[currentLevelIndex + 1];
 

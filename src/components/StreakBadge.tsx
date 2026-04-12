@@ -20,9 +20,7 @@ export function StreakBadge({ currentStreak, isActive }: StreakBadgeProps) {
       </div>
 
       <div>
-        <p className="text-3xl font-bold text-gray-900">
-          {currentStreak}
-        </p>
+        <p className="text-3xl font-bold text-gray-900">{currentStreak}</p>
         <p className="text-sm text-gray-500">
           {currentStreak === 1 ? "day streak" : "day streak"}
         </p>

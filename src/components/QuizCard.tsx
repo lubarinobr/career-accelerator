@@ -28,7 +28,7 @@ export function QuizCard({ question, children }: QuizCardProps) {
         </span>
       </div>
 
-      <h2 className="text-lg font-semibold leading-relaxed text-gray-900">
+      <h2 className="text-lg leading-relaxed font-semibold text-gray-900">
         {question.questionText}
       </h2>
 

@@ -43,7 +43,12 @@ export interface UserStats {
   name: string;
   avatarUrl: string | null;
   totalXp: number;
-  level: { level: number; title: string; currentXp: number; nextLevelXp: number };
+  level: {
+    level: number;
+    title: string;
+    currentXp: number;
+    nextLevelXp: number;
+  };
   streak: { currentStreak: number; longestStreak: number; isActive: boolean };
   streakFreezesAvailable: number;
   todayActivity: { questionsAnswered: number; correctCount: number } | null;

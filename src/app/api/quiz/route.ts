@@ -4,9 +4,11 @@
 // Does NOT include correctOption or explanation (don't leak answers).
 
 import { NextResponse } from "next/server";
+
+import type { QuizResponse, QuizQuestion, QuestionOption } from "@/types";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import type { QuizResponse, QuizQuestion, QuestionOption } from "@/types";
 
 const QUESTIONS_PER_LESSON = 5;
 const RECYCLE_DAYS = 30;
@@ -34,7 +36,8 @@ export async function GET() {
   const excludedIds = recentAnswers.map((a) => a.questionId);
 
   // Build where clause conditionally
-  const whereClause = excludedIds.length > 0 ? { id: { notIn: excludedIds } } : {};
+  const whereClause =
+    excludedIds.length > 0 ? { id: { notIn: excludedIds } } : {};
 
   // Get total eligible questions count for random offset
   const totalEligible = await prisma.question.count({ where: whereClause });
@@ -66,20 +69,22 @@ export async function GET() {
       },
       skip: offset,
       take: 1,
-    })
+    }),
   );
 
   const results = await Promise.all(questionPromises);
   const questions = results.flat();
 
   const response: QuizResponse = {
-    questions: questions.map((q): QuizQuestion => ({
-      id: q.id,
-      domain: q.domain,
-      difficulty: q.difficulty as QuizQuestion["difficulty"],
-      questionText: q.questionText,
-      options: q.options as unknown as QuestionOption[],
-    })),
+    questions: questions.map(
+      (q): QuizQuestion => ({
+        id: q.id,
+        domain: q.domain,
+        difficulty: q.difficulty as QuizQuestion["difficulty"],
+        questionText: q.questionText,
+        options: q.options as unknown as QuestionOption[],
+      }),
+    ),
   };
 
   return NextResponse.json(response);

@@ -7,7 +7,8 @@ interface XPBarProps {
 }
 
 export function XPBar({ currentXp, nextLevelXp, title }: XPBarProps) {
-  const percentage = nextLevelXp > 0 ? Math.min((currentXp / nextLevelXp) * 100, 100) : 100;
+  const percentage =
+    nextLevelXp > 0 ? Math.min((currentXp / nextLevelXp) * 100, 100) : 100;
 
   return (
     <div className="rounded-xl bg-white p-4 shadow-sm ring-1 ring-gray-100">
@@ -23,9 +24,7 @@ export function XPBar({ currentXp, nextLevelXp, title }: XPBarProps) {
           style={{ width: `${percentage}%` }}
         />
       </div>
-      <p className="mt-2 text-xs text-gray-400">
-        Next level: {title}
-      </p>
+      <p className="mt-2 text-xs text-gray-400">Next level: {title}</p>
     </div>
   );
 }

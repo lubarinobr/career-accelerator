@@ -38,7 +38,7 @@ function resolveModel(model?: ModelPreset | string): string {
  */
 export async function generateQuestions(
   prompt: string,
-  options?: LLMOptions
+  options?: LLMOptions,
 ): Promise<string> {
   const client = getClient({
     maxRetries: options?.maxRetries ?? 3,
@@ -69,7 +69,7 @@ export async function generateFeedback(
   correctOption: string,
   userAnswer: string,
   explanation?: string,
-  llmOptions?: LLMOptions
+  llmOptions?: LLMOptions,
 ): Promise<string | null> {
   try {
     const client = getClient({

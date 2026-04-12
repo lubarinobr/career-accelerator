@@ -11,7 +11,7 @@ function getTimezone(): string {
 
 export async function api(
   url: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<Response> {
   const headers = new Headers(options.headers);
   headers.set("X-Timezone", getTimezone());

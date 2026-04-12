@@ -3,12 +3,14 @@
 // update daily activity, update streaks on lesson complete.
 
 import { NextResponse } from "next/server";
+
+import type { AnswerRequest, AnswerResponse } from "@/types";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { generateFeedback } from "@/lib/llm";
-import { calculateAnswerXP, calculateLessonBonusXP } from "@/lib/xp";
 import { calculateStreak, getLocalDate } from "@/lib/streak";
-import type { AnswerRequest, AnswerResponse } from "@/types";
+import { calculateAnswerXP, calculateLessonBonusXP } from "@/lib/xp";
 
 const LESSON_SIZE = 5;
 
@@ -33,14 +35,14 @@ export async function POST(request: Request) {
   if (!questionId || !selectedOption) {
     return NextResponse.json(
       { error: "questionId and selectedOption are required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (!["A", "B", "C", "D"].includes(selectedOption)) {
     return NextResponse.json(
       { error: "selectedOption must be A, B, C, or D" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -85,7 +87,7 @@ export async function POST(request: Request) {
       options,
       question.correctOption,
       selectedOption,
-      question.explanation
+      question.explanation,
     );
   }
 
@@ -156,7 +158,7 @@ export async function POST(request: Request) {
       streak?.currentStreak ?? 0,
       streak?.longestStreak ?? 0,
       streak?.freezeUsedDate?.toISOString().split("T")[0] ?? null,
-      (user?.streakFreezesAvailable ?? 0) > 0
+      (user?.streakFreezesAvailable ?? 0) > 0,
     );
 
     if (streakResult.action !== "none") {

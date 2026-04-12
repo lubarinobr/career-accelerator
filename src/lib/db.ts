@@ -2,8 +2,8 @@
 // Prisma 7 requires a Driver Adapter for database connections
 // Avoids multiple Prisma Client instances during Next.js dev hot reload
 
-import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 
 const globalForPrisma = globalThis as unknown as {
