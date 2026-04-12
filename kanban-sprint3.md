@@ -41,43 +41,27 @@ WEEK 2 — integration + polish
 
 ---
 
-**SP3-01 — XP calculation logic**
+~~**SP3-01 — XP calculation logic**~~ **DONE**
 - **Assignee:** Dev 2
 - **Priority:** P0
-- **Depends on:** None — **start immediately on day 1**
-- **Blocks:** SP3-03 (leveling), SP3-07 (streak freeze), SP3-10 (quiz XP) — **SYNC-7: Notify Dev 1 when merged.**
-- **Description:** Implement `src/lib/xp.ts`. Pure functions, no DB calls. Must include:
-  - `calculateAnswerXP(isCorrect: boolean): number` — correct = +10, wrong = +2
-  - `calculateLessonBonusXP(correctCount: number, totalCount: number): number` — +20 if perfect (5/5), 0 otherwise
-  - `calculateStreakFreezeCost(): number` — returns 50
-  - `canAffordStreakFreeze(totalXp: number): boolean` — returns true if totalXp >= 50
-- **Acceptance Criteria:** All functions exported. **Unit tested with Vitest** (per dev-workflow.md — XP formulas are pure logic that must be tested). Tests cover: correct = 10, wrong = 2, perfect bonus = 20, non-perfect bonus = 0, freeze cost = 50, afford/can't afford.
+- **Completed:** 2026-05-10
+- **SYNC-7: Dev 1 notified — unblocked for SP3-10 (quiz XP integration).**
+- **Result:** `src/lib/xp.ts` — 4 pure functions: `calculateAnswerXP`, `calculateLessonBonusXP`, `calculateStreakFreezeCost`, `canAffordStreakFreeze`. Vitest installed and configured (`vitest.config.ts`, test scripts in `package.json`). 12 unit tests in `src/lib/xp.test.ts`, all passing.
 
 ---
 
-**SP3-03 — Leveling system**
+~~**SP3-03 — Leveling system**~~ **DONE**
 - **Assignee:** Dev 2
 - **Priority:** P1
-- **Depends on:** SP3-01 (XP logic must exist)
-- **Blocks:** SP3-02 (user API needs level calculation), SP3-04 (XPBar), SP3-05 (LevelBadge)
-- **Description:** Add to `src/lib/xp.ts`:
-  - `calculateLevel(totalXp: number): { level: number; title: string; currentXp: number; nextLevelXp: number }` — returns level info based on XP thresholds from architecture.md:
-    - Level 1: Intern (0 XP)
-    - Level 2: Junior (100 XP)
-    - Level 3: Mid-level (300 XP)
-    - Level 4: Senior (600 XP)
-    - Level 5: Specialist (1000 XP)
-    - Level 6: Certified (1500 XP)
-  - `currentXp` = XP earned within current level, `nextLevelXp` = XP needed for next level
-- **Acceptance Criteria:** Function returns correct level for any XP value. **Unit tested** — test boundary cases (0, 99, 100, 299, 300, 1500, 2000).
+- **Completed:** 2026-05-10
+- **Result:** `calculateLevel(totalXp)` added to `src/lib/xp.ts`. Returns `{ level, title, currentXp, nextLevelXp }`. 6 levels: Intern→Certified. 8 unit tests covering all boundaries (0, 99, 100, 300, 600, 1000, 1500, 2000). `LevelInfo` type exported.
 
 ---
 
-**SP3-06 — Streak engine**
+~~**SP3-06 — Streak engine**~~ **READY TO TEST**
 - **Assignee:** Dev 1
 - **Priority:** P0
-- **Depends on:** None — **start immediately on day 1 (parallel with Dev 2)**
-- **Blocks:** SP3-07 (streak freeze), SP3-11 (daily activity)
+- **Completed:** 2026-05-10
 - **Description:** Implement `src/lib/streak.ts`. Functions:
   - `calculateStreak(lastActiveDate: Date | null, currentDate: Date, freezeUsedDate: Date | null): { currentStreak: number; isActive: boolean; needsFreeze: boolean }` — determines if the streak is alive, broken, or needs a freeze
   - `getLocalDate(timezone: string): string` — converts current time to the user's local date string (YYYY-MM-DD) using `Intl.DateTimeFormat`
@@ -89,28 +73,12 @@ WEEK 2 — integration + polish
 
 ---
 
-**SP3-02 — GET /api/user — profile + stats**
+~~**SP3-02 — GET /api/user — profile + stats**~~ **DONE**
 - **Assignee:** Dev 2
 - **Priority:** P0
-- **Depends on:** SP3-01 (XP), SP3-03 (leveling)
-- **Blocks:** SP3-09 (dashboard) — **SYNC-8: Notify Dev 3 when merged.**
-- **Description:** Implement `src/app/api/user/route.ts`. Returns everything the dashboard needs in one call:
-  ```json
-  {
-    "name": "...",
-    "avatarUrl": "...",
-    "totalXp": 120,
-    "level": { "level": 2, "title": "Junior", "currentXp": 20, "nextLevelXp": 200 },
-    "streak": { "currentStreak": 5, "longestStreak": 12, "isActive": true },
-    "streakFreezesAvailable": 1,
-    "todayActivity": { "questionsAnswered": 5, "correctCount": 4 }
-  }
-  ```
-  - Auth required
-  - Calculates level from `user.totalXp` using `calculateLevel()`
-  - Gets streak from `streaks` table
-  - Gets today's activity from `daily_activity` table
-- **Acceptance Criteria:** Returns all fields in one call. Level is calculated, not stored. Streak data comes from DB. Today's activity shows current day only. Requires auth.
+- **Completed:** 2026-05-10
+- **SYNC-8: Dev 3 notified — unblocked for SP3-09 (dashboard real data).**
+- **Result:** `src/app/api/user/route.ts` — returns full dashboard payload in one call. Upserts streak record on first access. Auto-applies streak freeze if user missed exactly 1 day (side effect on GET, documented per D2-S3-Q3). Calculates level via `calculateLevel()`. Reads timezone from `x-timezone` header. Returns: name, avatarUrl, totalXp, level, streak, streakFreezesAvailable, todayActivity.
 
 ---
 
@@ -144,9 +112,10 @@ WEEK 2 — integration + polish
 
 ---
 
-**SP3-10 — Update quiz flow to award XP**
+~~**SP3-10 — Update quiz flow to award XP**~~ **READY TO TEST**
 - **Assignee:** Dev 1
 - **Priority:** P0
+- **Completed:** 2026-05-10
 - **Depends on:** SP3-01 — **SYNC-7: Wait for Dev 2 to notify that SP3-01 is merged.**
 - **Blocks:** SP3-15 (smoke test)
 - **Description:** Modify `POST /api/answer` to:
@@ -172,16 +141,11 @@ WEEK 2 — integration + polish
 
 ---
 
-**SP3-07 — Streak Freeze mechanic**
+~~**SP3-07 — Streak Freeze mechanic**~~ **DONE**
 - **Assignee:** Dev 2
 - **Priority:** P1
-- **Depends on:** SP3-06 (streak engine), SP3-01 (XP — freeze costs 50 XP) — **SYNC-7**
-- **Blocks:** SP3-15 (smoke test)
-- **Description:** Create `POST /api/streak-freeze/buy` and add auto-apply logic:
-  - **Buy:** Deduct 50 XP from `user.totalXp`, increment `user.streakFreezesAvailable`. Validate `canAffordStreakFreeze()` first.
-  - **Auto-apply:** When a user logs in / starts a quiz after missing exactly 1 day: if `streakFreezesAvailable > 0`, consume one freeze, set `streak.freezeUsedDate`, keep the streak alive. If missed 2+ days, streak breaks regardless.
-  - Add a "Buy Streak Freeze (50 XP)" button to the dashboard (coordinate with Dev 3).
-- **Acceptance Criteria:** User can spend 50 XP to buy a freeze. Freeze auto-applies on next login after 1 missed day. Can't buy if XP < 50. Missing 2+ days breaks streak even with freezes.
+- **Completed:** 2026-05-10
+- **Result:** `POST /api/streak-freeze/buy` at `src/app/api/streak-freeze/buy/route.ts` — validates `canAffordStreakFreeze()`, deducts 50 XP atomically, increments `streakFreezesAvailable`. Returns 400 if insufficient XP. Auto-apply logic in `GET /api/user` (SP3-02): missed 1 day + freeze available → consume freeze, set `lastActiveDate` to yesterday. 2+ day gap breaks streak regardless.
 
 ---
 
@@ -201,13 +165,11 @@ WEEK 2 — integration + polish
 
 ---
 
-**SP3-13 — PWA install prompt**
+~~**SP3-13 — PWA install prompt**~~ **DONE**
 - **Assignee:** Dev 2
 - **Priority:** P2
-- **Depends on:** None
-- **Blocks:** SP3-15 (smoke test)
-- **Description:** Create a custom "Add to Home Screen" banner component. Shows on first visit if the app is not already installed. Uses the `beforeinstallprompt` event. Dismissible (remember in localStorage). Clean, non-intrusive design.
-- **Acceptance Criteria:** Banner appears on first visit on Android Chrome. Tapping installs the PWA. Dismissing hides it permanently. Does not appear if already installed.
+- **Completed:** 2026-05-10
+- **Result:** `src/components/PwaInstallPrompt.tsx` — listens for `beforeinstallprompt` (Chrome Android only per D2-S3-Q6). Shows install banner with dismiss. Dismiss remembered in localStorage. Added to root `layout.tsx`. Shows nothing on unsupported browsers.
 
 ---
 
@@ -242,7 +204,11 @@ _No tasks in progress._
 - **SP3-12** — Mobile responsive polish (Dev 3, 2026-05-10)
 
 ### DONE
-_No tasks completed._
+- **SP3-01** — XP calculation logic (Dev 2, 2026-05-10) — **SYNC-7 delivered**
+- **SP3-03** — Leveling system (Dev 2, 2026-05-10)
+- **SP3-02** — GET /api/user (Dev 2, 2026-05-10) — **SYNC-8 delivered**
+- **SP3-07** — Streak Freeze mechanic (Dev 2, 2026-05-10)
+- **SP3-13** — PWA install prompt (Dev 2, 2026-05-10)
 
 ---
 
