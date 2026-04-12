@@ -38,6 +38,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# question export data (SP2-13)
+/data/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

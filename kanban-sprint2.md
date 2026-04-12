@@ -185,7 +185,9 @@ WEEK 2 — integration
 _No tasks in progress._
 
 ### READY TO TEST
-_No tasks ready for testing._
+- **SP2-02** — Prompt engineering (Dev 1, 2026-04-26)
+- **SP2-01** — Batch generation script (Dev 1, 2026-04-26)
+- **SP2-13** — CSV export script (Dev 1, 2026-04-26)
 
 ### DONE
 - **SP2-07** — Claude API client wrapper (Dev 2, 2026-04-12)
