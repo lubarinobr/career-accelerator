@@ -1,0 +1,88 @@
+// SP1-03 — Prisma schema
+// 5 tables: users, questions, user_answers, daily_activity, streaks
+// Based on architecture.md section 3
+// All PKs use gen_random_uuid() at the database level (D2-Q2)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  googleId               String   @unique @map("google_id")
+  email                  String
+  name                   String
+  avatarUrl              String?  @map("avatar_url")
+  totalXp                Int      @default(0) @map("total_xp")
+  level                  Int      @default(1)
+  streakFreezesAvailable Int      @default(0) @map("streak_freezes_available")
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  answers       UserAnswer[]
+  dailyActivity DailyActivity[]
+  streak        Streak?
+
+  @@map("users")
+}
+
+model Question {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  domain        String
+  difficulty    String
+  questionText  String   @map("question_text")
+  options       Json
+  correctOption String   @map("correct_option")
+  explanation   String
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  answers UserAnswer[]
+
+  @@map("questions")
+}
+
+model UserAnswer {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  questionId     String   @map("question_id") @db.Uuid
+  selectedOption String   @map("selected_option")
+  isCorrect      Boolean  @map("is_correct")
+  aiFeedback     String?  @map("ai_feedback")
+  xpEarned       Int      @map("xp_earned")
+  answeredAt     DateTime @default(now()) @map("answered_at")
+
+  user     User     @relation(fields: [userId], references: [id])
+  question Question @relation(fields: [questionId], references: [id])
+
+  @@map("user_answers")
+}
+
+model DailyActivity {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String   @map("user_id") @db.Uuid
+  activityDate      DateTime @map("activity_date") @db.Date
+  questionsAnswered Int      @map("questions_answered")
+  correctCount      Int      @map("correct_count")
+  xpEarned          Int      @map("xp_earned")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, activityDate])
+  @@map("daily_activity")
+}
+
+model Streak {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String    @unique @map("user_id") @db.Uuid
+  currentStreak  Int       @default(0) @map("current_streak")
+  longestStreak  Int       @default(0) @map("longest_streak")
+  lastActiveDate DateTime? @map("last_active_date") @db.Date
+  freezeUsedDate DateTime? @map("freeze_used_date") @db.Date
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("streaks")
+}
