@@ -128,9 +128,10 @@ WEEK 2 — integration + polish
 
 ---
 
-**SP3-11 — Update quiz flow to record daily activity**
+~~**SP3-11 — Update quiz flow to record daily activity**~~ **READY TO TEST**
 - **Assignee:** Dev 1
 - **Priority:** P1
+- **Completed:** 2026-05-10
 - **Depends on:** SP3-06 (streak engine), SP3-10 (XP must be working)
 - **Blocks:** SP3-15 (smoke test)
 - **Description:** Modify `POST /api/answer` to:
