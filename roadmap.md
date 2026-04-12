@@ -40,14 +40,15 @@
 | S2-02 | Prompt engineering for AWS Cloud Practitioner (CLF-C02) | P0 | TODO | — | Prompts cover all 4 domains, 3 difficulty levels, output matches `questions` schema |
 | S2-03 | Generate initial question pool (target: 600 questions) | P0 | TODO | S2-01, S2-02 | 600 questions in DB, distributed across domains and difficulties |
 | S2-04 | `GET /api/quiz` — serve next batch of questions | P0 | TODO | S1-04 | Returns 5 unanswered questions for the user, excludes previously answered ones |
-| S2-05 | `POST /api/answer` — submit answer, calculate XP | P0 | TODO | S1-04 | Saves answer to `user_answers`, returns is_correct + xp_earned, updates `daily_activity` |
+| S2-05 | `POST /api/answer` — submit answer | P0 | TODO | S1-04 | Saves answer to `user_answers`, returns is_correct + correct option. No XP calculation (deferred to Sprint 3). |
 | S2-06 | LLM feedback integration (wrong answers only) | P1 | TODO | S2-05 | When answer is wrong, calls Claude API for a short simplified-English explanation, saves to `ai_feedback` |
 | S2-07 | Claude API client wrapper (`lib/llm.ts`) | P0 | TODO | — | Reusable client with error handling, used by both batch script and answer feedback |
 | S2-08 | QuizCard component (question text + 4 option buttons) | P0 | TODO | S1-01 | Displays one question at a time, large touch targets, mobile-friendly |
 | S2-09 | OptionButton component (A/B/C/D with tap feedback) | P0 | TODO | S2-08 | Tapping shows selected state, correct = green, wrong = red |
 | S2-10 | FeedbackModal component (correct/wrong result + explanation) | P1 | TODO | S2-09 | Shows result, XP earned, AI explanation for wrong answers, "Next" button |
 | S2-11 | Quiz page — full flow (load questions, answer, feedback, next) | P0 | TODO | S2-04, S2-05, S2-08, S2-10 | User can complete a 5-question lesson end-to-end |
-| S2-12 | "Lesson Complete" screen (summary: X/5 correct, XP earned) | P2 | TODO | S2-11 | After 5 questions, shows score summary and option to do another lesson |
+| S2-12 | "Lesson Complete" screen (summary: X/5 correct) | P2 | TODO | S2-11 | After 5 questions, shows score summary and option to do another lesson |
+| S2-13 | CSV export for question quality review | P1 | TODO | S2-03 | Script exports all generated questions to CSV for CEO spot-check before go-live |
 
 **Sprint 2 Definition of Done:** A user can log in, start a quiz, answer 5 AWS Cloud Practitioner questions, see immediate right/wrong feedback with AI explanations, and complete a lesson.
 

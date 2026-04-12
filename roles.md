@@ -23,9 +23,9 @@ The **Devs** (Front-end, Back-end, Full-stack) are the ones who ultimately "rece
 |:-----|:-------|:------|:------|
 | CEO / P.O. | **Active** | — | Product vision, feature prioritization |
 | Tech Lead | **Active** | — | Architecture, PR reviews, technical decisions |
-| Senior Software Engineer — Dev 1 | **Hiring** | Sprint 1 | Infrastructure, auth, deployment |
-| Senior Software Engineer — Dev 2 | **Hiring** | Sprint 1 | Database, data model, API logic |
-| Senior React Frontend Engineer | **Future hire** | Sprint 2 | Quiz UI, components, interactions |
+| Senior Software Engineer — Dev 1 | **Active** | Sprint 1 | AI engine, batch generation, LLM integration |
+| Senior Software Engineer — Dev 2 | **Active** | Sprint 1 | Database, API logic, backend services |
+| Senior React Frontend Engineer — Dev 3 | **Hiring** | Sprint 2 | Quiz UI, components, interactions |
 | UI/UX Designer | **Future hire** | TBD | Visual design, design system |
 
 > Full job descriptions for Dev 1 and Dev 2 are in `job-roles.md`.

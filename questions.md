@@ -123,72 +123,72 @@ The app is initially for personal use by a single user located in Brazil. No LGP
 
 # Roadmap Technical Review — Questions from Tech Lead
 
+> **P.O. ACTION REQUIRED — SPRINT 2 BLOCKERS**
+>
+> Questions Q11, Q12, Q14, and Q15 below are **blocking Sprint 2 planning**.
+> The Tech Lead cannot finalize the Sprint 2 kanban until these are answered.
+> Each question includes the Tech Lead's recommendation — the P.O. can agree
+> or choose a different option. Please answer and update the status to ANSWERED.
+>
+> — Tech Lead, 2026-04-12
+
 The following questions were raised after reviewing `roadmap.md`.
 
 ---
 
-## Q11 - Question Exhaustion Strategy (BLOCKED) — TO P.O.
+## Q11 - Question Exhaustion Strategy (ANSWERED) — TO P.O.
 **Asked by:** Tech Lead | **Date:** 2026-04-12
+**Answered by:** P.O. | **Date:** 2026-04-12
 
-The MVP targets **600 pre-generated questions**. At 5 questions per lesson, that's **120 lessons**. If the user does 2-3 lessons per day, the pool runs out in ~40-60 days.
+**Answer: Option A — Recycle with 30-day cooldown.**
 
-**What should happen when the user has answered all questions?**
-- **Option A:** Recycle old questions (allow re-answering after a cooldown period, e.g., 30 days)
-- **Option B:** Generate more questions on-demand when pool gets low
-- **Option C:** Show a "You've completed all questions!" screen and wait for manual batch refill
-
-This affects tasks S2-04 (serve questions) and S2-03 (pool size). The Tech Lead recommends **Option A** (recycle with cooldown) as simplest, but the P.O. should decide.
+Agreed with the Tech Lead's recommendation. After a user has answered all questions, recycle them after 30 days since last answered. This is the simplest approach, keeps the streak alive, and repetition is actually good for certification study (spaced repetition effect). The query in S2-04 should prioritize unanswered questions first, then oldest-answered questions past the 30-day cooldown. No new UI needed — the user just keeps getting questions seamlessly.
 
 ---
 
-## Q12 - Sprint 2/3 XP Overlap Clarification (BLOCKED) — TO P.O.
+## Q12 - Sprint 2/3 XP Overlap Clarification (ANSWERED) — TO P.O.
 **Asked by:** Tech Lead | **Date:** 2026-04-12
+**Answered by:** P.O. | **Date:** 2026-04-12
 
-There is an overlap between Sprint 2 and Sprint 3 regarding XP:
-- **S2-05** says: "submit answer, calculate XP" and "returns is_correct + xp_earned, updates daily_activity"
-- **S3-01** says: "XP calculation logic" 
-- **S3-10** says: "Update quiz flow to award XP after each answer"
-- **S3-11** says: "Update quiz flow to record daily activity"
+**Answer: Agreed with the Tech Lead. XP and daily_activity belong entirely in Sprint 3.**
 
-**Which sprint actually implements XP and daily_activity tracking?**
+Sprint 2 focuses on the core quiz flow only. S2-05 should:
+- Save the answer to `user_answers`
+- Return `is_correct` and the correct option
+- Trigger LLM feedback if wrong (S2-06)
+- **No XP calculation, no daily_activity update**
 
-The Tech Lead's recommendation:
-- **Sprint 2:** S2-05 should save the answer and return `is_correct` only. No XP calculation yet. Daily activity is not tracked yet.
-- **Sprint 3:** S3-01 and S3-10 implement the full XP system, and S3-11 adds daily activity tracking.
-
-This avoids rework. Does the P.O. agree, or should Sprint 2 already include basic XP awarding?
+Sprint 3 adds the gamification layer on top. This is cleaner and avoids rework. I'll update the roadmap accordingly to remove XP references from S2-05's acceptance criteria.
 
 ---
 
-## Q13 - Supabase Region Availability (OPEN) — TECH NOTE
+## Q13 - Supabase Region Availability (ANSWERED) — TECH NOTE
 **Asked by:** Tech Lead | **Date:** 2026-04-12
+**Resolved:** 2026-04-12
 
-**This is a tech note, not a P.O. question.**
-
-Supabase free tier may not offer `sa-east-1` (São Paulo). Available free-tier regions are typically US/EU. The Tech Lead will verify during S1-03 and choose the closest available region. If São Paulo is not available, `us-east-1` (Virginia) will be used — latency from Brazil is ~120ms, acceptable for MVP with a single user.
+**Answer: `eu-west-1` (Ireland).** São Paulo was unavailable on Supabase free tier. Ireland was the best option available. Session Pooler connection used for IPv4 compatibility. Latency is acceptable for a single-user MVP.
 
 ---
 
-## Q14 - Question Quality Validation (BLOCKED) — TO P.O.
+## Q14 - Question Quality Validation (ANSWERED) — TO P.O.
 **Asked by:** Tech Lead | **Date:** 2026-04-12
+**Answered by:** P.O. | **Date:** 2026-04-12
 
-Task S2-03 targets 600 AI-generated questions. LLMs can produce inaccurate content, especially on specific certification exam details.
+**Answer: Yes — export a CSV for spot-checking. The CEO will review.**
 
-**Does the P.O. want to manually review a sample of generated questions before they go live?**
-- If yes: The Tech Lead will build a simple review script/export (CSV or JSON) for P.O. spot-checking
-- If no: We trust the LLM output with prompt-level validation only
+The Tech Lead is right, incorrect questions are worse than no questions for certification study. The plan:
+1. After batch generation, export all 600 questions to a CSV (question, options, correct answer, explanation, domain, difficulty).
+2. The CEO (who is the target user and is studying for this cert) will spot-check at least 10-20% (~60-120 questions).
+3. Any flagged questions get removed or corrected manually before going live.
 
-Since the target user is studying for a real AWS certification, incorrect questions could be harmful. The Tech Lead **strongly recommends** at least a spot-check of 10-20% of generated questions.
+This does NOT block Sprint 2 development — the batch script (S2-01) and quiz flow (S2-04, S2-05) can be built with a smaller test set of 20-30 questions. The full 600 pool and review happen in parallel. Add a small task to S2 for the CSV export functionality.
 
 ---
 
-## Q15 - Minimum Daily Activity for Streak (BLOCKED) — TO P.O.
+## Q15 - Minimum Daily Activity for Streak (ANSWERED) — TO P.O.
 **Asked by:** Tech Lead | **Date:** 2026-04-12
+**Answered by:** P.O. | **Date:** 2026-04-12
 
-Task S3-06 (Streak engine) needs a clear definition: **what counts as "active" for a day?**
+**Answer: Option B — Complete at least 1 full lesson (5 questions) = active day.**
 
-- **Option A:** Answer at least 1 question = active day
-- **Option B:** Complete at least 1 full lesson (5 questions) = active day
-- **Option C:** Earn at least X XP = active day
-
-This directly impacts the "Daily Consistency" North Star metric from `about.md`. The about.md says "a 5-minute session every single day" which suggests Option B (one full lesson), but the P.O. should confirm.
+This aligns with the North Star metric ("a 5-minute session every single day"). One question is too easy and doesn't build a real habit. Five questions is the minimum meaningful engagement — it takes ~3-5 minutes and ensures the user actually practiced. The streak badge should not light up until the user finishes a full lesson that day.

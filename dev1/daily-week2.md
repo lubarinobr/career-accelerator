@@ -129,7 +129,7 @@ None. All Dev 1 Sprint 2 tasks are complete.
 | SP2-02 — Prompt engineering | READY TO TEST | 12 prompt variations, weighted distribution, feedback prompt |
 | SP2-01 — Batch generation script | READY TO TEST | Standalone, Zod validated, CLI flags, error handling |
 | SP2-03 — Generate question pool | READY TO TEST | 194 questions, all 4 domains covered |
-| SP2-13 — CSV export | READY TO TEST | Exports to data/questions-export.csv, distribution summary |
+| SP2-13 — CSV export | READY TO TEST | Executed — 194 questions exported to `data/questions-export.csv`. CEO can review. |
 | SP2-06 — LLM feedback | READY TO TEST | Haiku feedback on wrong answers, complements explanation |
 
 **All Dev 1 Sprint 2 tasks are complete and READY TO TEST.** Waiting on Tech Lead review.
