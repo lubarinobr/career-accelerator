@@ -1,15 +1,20 @@
-import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 const publicRoutes = ["/login", "/api/auth"];
 
-export default auth((req) => {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const isPublic = publicRoutes.some((route) => pathname.startsWith(route));
 
+  // Check for next-auth session token cookie
+  const hasSession =
+    req.cookies.has("authjs.session-token") ||
+    req.cookies.has("__Secure-authjs.session-token");
+
   // Authenticated user hitting /login or / -> redirect to /dashboard
-  if (req.auth) {
+  if (hasSession) {
     if (pathname === "/login" || pathname === "/") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
@@ -27,8 +32,10 @@ export default auth((req) => {
   }
 
   return NextResponse.next();
-});
+}
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icons|sw.js|manifest.json).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icons|sw.js|manifest.json).*)",
+  ],
 };
