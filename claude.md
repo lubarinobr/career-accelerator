@@ -17,3 +17,4 @@ This is a index page, go to the files when you need more details.
 15. kanban-sprint2.md - Sprint 2 dev kanban with task assignments
 16. dev3-techleader-question.md - Dev 3 questions to Tech Lead (tracks status: OPEN/ANSWERED)
 17. dev3/ - Dev 3 folder (daily/weekly logs, one file per week: daily-week1.md, daily-week2.md, etc.)
+18. kanban-sprint3.md - Sprint 3 dev kanban (final sprint) with task assignments

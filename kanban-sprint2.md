@@ -190,6 +190,17 @@ _No tasks in progress._
 - **SP2-07** — Claude API client wrapper (Dev 2, 2026-04-12)
 - **SP2-04** — GET /api/quiz (Dev 2, 2026-04-12)
 - **SP2-05** — POST /api/answer (Dev 2, 2026-04-12) — **SYNC-4 + SYNC-5 delivered**
+- **SP2-02** — Prompt engineering (Dev 1, 2026-04-26)
+- **SP2-01** — Batch generation script (Dev 1, 2026-04-26)
+- **SP2-03** — Generate question pool — 194 questions (Dev 1, 2026-04-26)
+- **SP2-13** — CSV export (Dev 1, 2026-04-26)
+- **SP2-06** — LLM feedback on wrong answers (Dev 1, 2026-04-26)
+- **SP2-08** — QuizCard component (Dev 3, 2026-04-26)
+- **SP2-09** — OptionButton component (Dev 3, 2026-04-26)
+- **SP2-10** — FeedbackModal component (Dev 3, 2026-04-26)
+- **SP2-11** — Quiz page full flow — real API integration (Dev 3, 2026-04-26)
+- **SP2-12** — Lesson Complete screen (Dev 3, 2026-04-26)
+- **SP2-14** — End-to-end smoke test — ALL TESTS PASS (All, 2026-04-12)
 
 ---
 
