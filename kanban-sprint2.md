@@ -105,33 +105,27 @@ WEEK 2 — integration
 
 ---
 
-**SP2-08 — QuizCard component**
+~~**SP2-08 — QuizCard component**~~ **READY TO TEST**
 - **Assignee:** Dev 3
 - **Priority:** P0
-- **Depends on:** None — **start immediately on day 1 (parallel with Dev 1 and Dev 2)**
-- **Blocks:** SP2-09 (OptionButton)
-- **Description:** Create `src/components/QuizCard.tsx`. Displays a single question: question text prominently at top, domain badge (e.g., "Cloud Concepts"), difficulty indicator. The component receives question data as props — no API calls. Mobile-first, large readable text (min 16px). Card should feel like a "Duolingo-style" quiz card.
-- **Acceptance Criteria:** Renders question text, domain, and difficulty. Mobile-friendly at 375px. Large, readable text. Accepts question data via props.
+- **Completed:** 2026-04-26
+- **Result:** `src/components/QuizCard.tsx` — Displays question text, domain badge (blue pill), difficulty pill (green Easy / yellow Medium / red Hard per D3-Q1). Accepts `QuizQuestion` via props + children slot for OptionButtons. Mobile-first, large readable text (text-lg). Composable — no API calls, no internal state.
 
 ---
 
-**SP2-09 — OptionButton component**
+~~**SP2-09 — OptionButton component**~~ **READY TO TEST**
 - **Assignee:** Dev 3
 - **Priority:** P0
-- **Depends on:** SP2-08 (renders inside QuizCard)
-- **Blocks:** SP2-10 (FeedbackModal)
-- **Description:** Create `src/components/OptionButton.tsx`. Renders one answer option (A, B, C, or D). States: default (neutral), selected (highlighted), correct (green), wrong (red). Touch targets must be at least 44px tall. Tapping calls an `onSelect` callback. After answer is submitted, shows correct/wrong coloring.
-- **Acceptance Criteria:** Four buttons render for A/B/C/D. Tapping selects and triggers callback. After submission: correct option turns green, wrong selection turns red. Touch targets >= 44px. Smooth state transitions.
+- **Completed:** 2026-04-26
+- **Result:** `src/components/OptionButton.tsx` — 5 visual states: default, selected (blue ring), correct (green), wrong (red), dimmed. Min-height 44px touch targets. Letter badge (A/B/C/D) with state-matching colors. `onSelect` callback, `disabled` prop for post-submission lock. Two-tap flow per D3-Q2 (select then parent "Check" button confirms).
 
 ---
 
-**SP2-10 — FeedbackModal component**
+~~**SP2-10 — FeedbackModal component**~~ **READY TO TEST**
 - **Assignee:** Dev 3
 - **Priority:** P1
-- **Depends on:** SP2-09 (visual flow — appears after option selection)
-- **Blocks:** SP2-11 (quiz flow)
-- **Description:** Create `src/components/FeedbackModal.tsx`. Appears after the user answers a question. Shows: correct/wrong icon + text, the pre-generated explanation (from DB), AI feedback for wrong answers (from LLM, if available — gracefully handle null), "Next Question" button. Slides up from bottom or overlays on mobile.
-- **Acceptance Criteria:** Shows correct (green) or wrong (red) feedback. Displays explanation text. Shows AI feedback when available, hides section when null. "Next" button advances to next question. Mobile-friendly overlay/slide-up.
+- **Completed:** 2026-04-26
+- **Result:** `src/components/FeedbackModal.tsx` — Full-screen takeover per D3-Q3. Green/red themed background. Check/X icon + "Correct!"/"Wrong" heading. Shows question reminder, correct answer on wrong answers, explanation card, AI Tutor card (hidden when `aiFeedback` is null). "Next Question" button anchored at bottom. Clean transition between states.
 
 ---
 
@@ -151,22 +145,26 @@ WEEK 2 — integration
 
 ---
 
-**SP2-11 — Quiz page — full flow**
+**SP2-11 — Quiz page — full flow** `DOING`
 - **Assignee:** Dev 3
 - **Priority:** P0
-- **Depends on:** SP2-04 + SP2-05 — **SYNC-5: Wait for Dev 2 to notify that both APIs are merged.** Also depends on SP2-08, SP2-09, SP2-10 (UI components).
+- **Status:** DOING — Built with mock data. Awaiting SYNC-5 API integration (swap mock functions for real fetch calls).
+- **Depends on:** SP2-04 + SP2-05 — **SYNC-5 delivered.** Also depends on SP2-08, SP2-09, SP2-10 (all READY TO TEST).
 - **Blocks:** SP2-12 (lesson complete)
-- **Description:** Rewrite `src/app/quiz/page.tsx` to implement the full quiz flow: on page load, call `GET /api/quiz` to fetch 5 questions; display one question at a time using QuizCard + OptionButton; on answer selection, call `POST /api/answer`; show FeedbackModal with result + explanation; "Next" button loads the next question; track progress (question 1/5, 2/5, etc.); after question 5, transition to lesson complete screen. Handle loading states, error states, and empty state (no questions available).
+- **Description:** `src/app/quiz/page.tsx` + `src/app/quiz/QuizFlow.tsx` + `src/app/quiz/mock-data.ts`. Full 5-question lesson flow: loading → question (with progress bar + X close per D3-Q4/Q5) → two-tap answer (select + "Check" per D3-Q2) → full-screen feedback → next → lesson complete. BottomNav hidden during quiz. States: loading, question, feedback, complete, error.
+- **Remaining:** Replace `mockFetchQuestions()` / `mockSubmitAnswer()` with real `fetch("/api/quiz")` / `fetch("/api/answer")` calls.
 - **Acceptance Criteria:** Full 5-question lesson flow works end-to-end. Questions load from API. Answers submit to API. Feedback shows after each answer. Progress indicator visible (X/5). Handles loading, errors, and no-questions gracefully.
 
 ---
 
-**SP2-12 — "Lesson Complete" screen**
+**SP2-12 — "Lesson Complete" screen** `DOING`
 - **Assignee:** Dev 3
 - **Priority:** P2
+- **Status:** DOING — Component built, integrated into QuizFlow with mock data.
 - **Depends on:** SP2-11 (triggers after 5th question)
 - **Blocks:** SP2-14 (smoke test)
-- **Description:** Create a lesson completion view (can be a component within the quiz page or a separate route). Shows: score summary (X/5 correct), list of questions with correct/wrong indicator, "Start Another Lesson" button (calls `GET /api/quiz` again), "Back to Dashboard" button. No XP display yet (Sprint 3).
+- **Description:** `src/components/LessonComplete.tsx` — Score circle (X/5), "Perfect Lesson!" for 5/5, question breakdown with check/X icons, "Start Another Lesson" + "Back to Dashboard" buttons. No XP display (Sprint 3).
+- **Remaining:** Will work end-to-end once SP2-11 is wired to real APIs.
 - **Acceptance Criteria:** Shows after 5th question is answered. Displays X/5 score. Lists all 5 questions with correct/wrong status. Both action buttons work. Mobile-friendly.
 
 ---
@@ -182,12 +180,16 @@ WEEK 2 — integration
 ---
 
 ### DOING
-_No tasks in progress._
+- **SP2-11** — Quiz page full flow (Dev 3, mock data — awaiting API integration)
+- **SP2-12** — Lesson Complete screen (Dev 3, mock data — awaiting API integration)
 
 ### READY TO TEST
 - **SP2-02** — Prompt engineering (Dev 1, 2026-04-26)
 - **SP2-01** — Batch generation script (Dev 1, 2026-04-26)
 - **SP2-13** — CSV export script (Dev 1, 2026-04-26)
+- **SP2-08** — QuizCard component (Dev 3, 2026-04-26)
+- **SP2-09** — OptionButton component (Dev 3, 2026-04-26)
+- **SP2-10** — FeedbackModal component (Dev 3, 2026-04-26)
 
 ### DONE
 - **SP2-07** — Claude API client wrapper (Dev 2, 2026-04-12)
