@@ -42,3 +42,25 @@
 - `src/types/index.ts` was already partially populated by Dev 1/Dev 2 with `QuizQuestion`, `QuestionOption`, `QuizResponse`, `AnswerRequest`, `AnswerResponse`. Good alignment — my proposed types matched almost exactly. Only difference: Dev 2 added `selectedOption` echo-back field and a `QuizResponse` wrapper with `message?` for empty pool.
 - The `difficulty` field in the shared types was `string` — I narrowed it to `"easy" | "medium" | "hard"` for type safety in the UI color mapping.
 - SYNC-5 was already delivered before I started my work, so technically I could have wired up real APIs from day 1. I chose to build with mock data anyway to keep my PR clean and independent of the API layer — integration will be a separate PR in Week 2.
+
+---
+
+## Day 5 — 2026-04-30
+
+### What I did
+- **SP2-11 API integration:** Swapped `mockFetchQuestions()` → `fetch("/api/quiz")` and `mockSubmitAnswer()` → `fetch("/api/answer")`. Aligned with `QuizResponse` wrapper type (handles `message` field for empty pool). Added proper HTTP error handling for both endpoints.
+- **SP2-11 → READY TO TEST.** Full quiz flow now hits real APIs end-to-end.
+- **SP2-12 → READY TO TEST.** LessonComplete was already integrated into QuizFlow — no changes needed, it works with real data automatically.
+- Updated kanban: moved SP2-11 and SP2-12 from DOING to READY TO TEST.
+- Removed mock-data import from QuizFlow (mock-data.ts still exists for reference/testing but is no longer imported).
+- TypeScript and ESLint pass cleanly.
+
+### Blockers
+- None. All Dev 3 tasks are now READY TO TEST.
+
+### Waiting on
+- Tech Lead review of SP2-08, SP2-09, SP2-10, SP2-11, SP2-12.
+- SP2-14 (smoke test) — waiting for all devs to have tasks in READY TO TEST or DONE.
+
+### Unexpected findings
+- The API integration was a clean swap — the mock data shapes matched the real API responses exactly. The `QuizResponse` wrapper (`{ questions, message? }`) was the only structural difference vs the mock (which returned `QuizQuestion[]` directly), but it was a one-line change.

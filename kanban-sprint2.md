@@ -143,26 +143,20 @@ WEEK 2 — integration
 
 ---
 
-**SP2-11 — Quiz page — full flow** `DOING`
+~~**SP2-11 — Quiz page — full flow**~~ **READY TO TEST**
 - **Assignee:** Dev 3
 - **Priority:** P0
-- **Status:** DOING — Built with mock data. Awaiting SYNC-5 API integration (swap mock functions for real fetch calls).
-- **Depends on:** SP2-04 + SP2-05 — **SYNC-5 delivered.** Also depends on SP2-08, SP2-09, SP2-10 (all READY TO TEST).
-- **Blocks:** SP2-12 (lesson complete)
-- **Description:** `src/app/quiz/page.tsx` + `src/app/quiz/QuizFlow.tsx` + `src/app/quiz/mock-data.ts`. Full 5-question lesson flow: loading → question (with progress bar + X close per D3-Q4/Q5) → two-tap answer (select + "Check" per D3-Q2) → full-screen feedback → next → lesson complete. BottomNav hidden during quiz. States: loading, question, feedback, complete, error.
-- **Remaining:** Replace `mockFetchQuestions()` / `mockSubmitAnswer()` with real `fetch("/api/quiz")` / `fetch("/api/answer")` calls.
+- **Completed:** 2026-04-30
+- **Result:** `src/app/quiz/QuizFlow.tsx` — Full 5-question lesson flow wired to real APIs (`GET /api/quiz`, `POST /api/answer`). Phases: loading → question → feedback → complete → error. Top progress bar (Duolingo-style) + X close button. BottomNav hidden during quiz. Two-tap answer flow (select → "Check"). Handles API errors, empty question pool, and loading states.
 - **Acceptance Criteria:** Full 5-question lesson flow works end-to-end. Questions load from API. Answers submit to API. Feedback shows after each answer. Progress indicator visible (X/5). Handles loading, errors, and no-questions gracefully.
 
 ---
 
-**SP2-12 — "Lesson Complete" screen** `DOING`
+~~**SP2-12 — "Lesson Complete" screen**~~ **READY TO TEST**
 - **Assignee:** Dev 3
 - **Priority:** P2
-- **Status:** DOING — Component built, integrated into QuizFlow with mock data.
-- **Depends on:** SP2-11 (triggers after 5th question)
-- **Blocks:** SP2-14 (smoke test)
-- **Description:** `src/components/LessonComplete.tsx` — Score circle (X/5), "Perfect Lesson!" for 5/5, question breakdown with check/X icons, "Start Another Lesson" + "Back to Dashboard" buttons. No XP display (Sprint 3).
-- **Remaining:** Will work end-to-end once SP2-11 is wired to real APIs.
+- **Completed:** 2026-04-30
+- **Result:** `src/components/LessonComplete.tsx` — Score circle (X/5), "Perfect Lesson!" for 5/5, question breakdown with check/X icons, "Start Another Lesson" (reloads quiz) + "Back to Dashboard" buttons. No XP display (Sprint 3). Integrated into QuizFlow, triggers after 5th question answered.
 - **Acceptance Criteria:** Shows after 5th question is answered. Displays X/5 score. Lists all 5 questions with correct/wrong status. Both action buttons work. Mobile-friendly.
 
 ---
@@ -178,8 +172,7 @@ WEEK 2 — integration
 ---
 
 ### DOING
-- **SP2-11** — Quiz page full flow (Dev 3, mock data — awaiting API integration)
-- **SP2-12** — Lesson Complete screen (Dev 3, mock data — awaiting API integration)
+_No tasks in progress._
 
 ### READY TO TEST
 - **SP2-02** — Prompt engineering (Dev 1, 2026-04-26)
@@ -190,6 +183,8 @@ WEEK 2 — integration
 - **SP2-08** — QuizCard component (Dev 3, 2026-04-26)
 - **SP2-09** — OptionButton component (Dev 3, 2026-04-26)
 - **SP2-10** — FeedbackModal component (Dev 3, 2026-04-26)
+- **SP2-11** — Quiz page full flow (Dev 3, 2026-04-30)
+- **SP2-12** — Lesson Complete screen (Dev 3, 2026-04-30)
 
 ### DONE
 - **SP2-07** — Claude API client wrapper (Dev 2, 2026-04-12)

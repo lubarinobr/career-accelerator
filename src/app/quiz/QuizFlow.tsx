@@ -2,14 +2,13 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { QuizQuestion, AnswerResponse } from "@/types";
+import type { QuizQuestion, QuizResponse, AnswerResponse } from "@/types";
 import type { OptionState } from "@/components/OptionButton";
 import { QuizCard } from "@/components/QuizCard";
 import { OptionButton } from "@/components/OptionButton";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { ProgressBar } from "@/components/ProgressBar";
 import { LessonComplete } from "@/components/LessonComplete";
-import { mockFetchQuestions, mockSubmitAnswer } from "./mock-data";
 
 type QuizPhase = "loading" | "question" | "feedback" | "complete" | "error";
 
@@ -42,14 +41,19 @@ export function QuizFlow() {
     setAnswerResult(null);
 
     try {
-      // TODO: Replace with fetch("/api/quiz") after SYNC-5
-      const data = await mockFetchQuestions();
-      if (data.length === 0) {
-        setErrorMessage("No questions available. Check back later!");
+      const res = await fetch("/api/quiz");
+      if (!res.ok) {
+        setErrorMessage("Failed to load questions. Please try again.");
         setPhase("error");
         return;
       }
-      setQuestions(data);
+      const data: QuizResponse = await res.json();
+      if (data.questions.length === 0) {
+        setErrorMessage(data.message ?? "No questions available. Check back later!");
+        setPhase("error");
+        return;
+      }
+      setQuestions(data.questions);
       setPhase("question");
     } catch {
       setErrorMessage("Failed to load questions. Please try again.");
@@ -72,8 +76,20 @@ export function QuizFlow() {
 
     setIsSubmitting(true);
     try {
-      // TODO: Replace with fetch("/api/answer") after SYNC-5
-      const result = await mockSubmitAnswer(currentQuestion.id, selectedOption);
+      const res = await fetch("/api/answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId: currentQuestion.id,
+          selectedOption,
+        }),
+      });
+      if (!res.ok) {
+        setErrorMessage("Failed to submit answer. Please try again.");
+        setPhase("error");
+        return;
+      }
+      const result: AnswerResponse = await res.json();
       setAnswerResult(result);
       setPhase("feedback");
     } catch {
