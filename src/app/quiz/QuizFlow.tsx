@@ -9,6 +9,7 @@ import { OptionButton } from "@/components/OptionButton";
 import { FeedbackModal } from "@/components/FeedbackModal";
 import { ProgressBar } from "@/components/ProgressBar";
 import { LessonComplete } from "@/components/LessonComplete";
+import { api } from "@/lib/api";
 
 type QuizPhase = "loading" | "question" | "feedback" | "complete" | "error";
 
@@ -41,7 +42,7 @@ export function QuizFlow() {
     setAnswerResult(null);
 
     try {
-      const res = await fetch("/api/quiz");
+      const res = await api("/api/quiz");
       if (!res.ok) {
         setErrorMessage("Failed to load questions. Please try again.");
         setPhase("error");
@@ -76,9 +77,8 @@ export function QuizFlow() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/answer", {
+      const res = await api("/api/answer", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           questionId: currentQuestion.id,
           selectedOption,

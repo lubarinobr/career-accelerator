@@ -34,4 +34,17 @@ export interface AnswerResponse {
   selectedOption: string;
   explanation: string;
   aiFeedback: string | null;
+  xpEarned: number; // SP3-10: per-answer XP (correct=10, wrong=2, +20 bonus on perfect lesson)
+  totalXp: number; // SP3-10: user's cumulative XP after this answer
+}
+
+// SP3-02: User API response — dashboard stats
+export interface UserStats {
+  name: string;
+  avatarUrl: string | null;
+  totalXp: number;
+  level: { level: number; title: string; currentXp: number; nextLevelXp: number };
+  streak: { currentStreak: number; longestStreak: number; isActive: boolean };
+  streakFreezesAvailable: number;
+  todayActivity: { questionsAnswered: number; correctCount: number } | null;
 }

@@ -55,11 +55,18 @@ export function FeedbackModal({
               </svg>
             )}
           </div>
-          <h2
-            className={`text-2xl font-bold ${isCorrect ? "text-green-700" : "text-red-700"}`}
-          >
-            {isCorrect ? "Correct!" : "Wrong"}
-          </h2>
+          <div>
+            <h2
+              className={`text-2xl font-bold ${isCorrect ? "text-green-700" : "text-red-700"}`}
+            >
+              {isCorrect ? "Correct!" : "Wrong"}
+            </h2>
+            {result.xpEarned > 0 && (
+              <p className={`text-sm font-semibold ${isCorrect ? "text-green-600" : "text-red-600"}`}>
+                +{result.xpEarned} XP
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Question reminder */}

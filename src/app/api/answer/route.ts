@@ -64,6 +64,8 @@ export async function POST(request: Request) {
       selectedOption: existingAnswer.selectedOption,
       explanation: question.explanation,
       aiFeedback: existingAnswer.aiFeedback,
+      xpEarned: existingAnswer.xpEarned, // SP3-10 will calculate real XP
+      totalXp: 0, // SP3-10 will return real cumulative XP
     };
     return NextResponse.json(response);
   }
@@ -101,6 +103,8 @@ export async function POST(request: Request) {
     selectedOption: userAnswer.selectedOption,
     explanation: question.explanation,
     aiFeedback: userAnswer.aiFeedback,
+    xpEarned: userAnswer.xpEarned, // SP3-10 will calculate real XP
+    totalXp: 0, // SP3-10 will return real cumulative XP
   };
 
   return NextResponse.json(response);

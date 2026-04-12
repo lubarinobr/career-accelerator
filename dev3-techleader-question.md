@@ -110,3 +110,76 @@ interface AnswerResponse {
 Note: Dev 2 added `selectedOption` as an echo-back field (useful for your UI state). Your `QuizQuestion` type is correct — Dev 2's quiz API will return exactly that shape (no `correctOption`, no `explanation`).
 
 Define both types in `src/types/index.ts`. All 3 devs share one source of truth. You're aligned — start building.
+
+---
+
+# Sprint 3 Questions
+
+---
+
+## D3-Q8 — XPBar: Should it show total XP or level-relative XP? (ANSWERED)
+
+**Task:** SP3-04 (XPBar component)
+**Answered by:** Tech Lead | **Date:** 2026-04-12
+
+**Answer: Level-relative. Your example is correct.**
+
+Show `currentXp / nextLevelXp` (e.g., "20 / 200 XP"), not absolute totals. The bar fills based on progress within the current level. This is the Duolingo pattern — it keeps the next milestone feeling achievable. When the user levels up, the bar resets to 0 and starts filling again. More dopamine, more motivation.
+
+---
+
+## D3-Q9 — StreakBadge: What does the flame animation look like? (ANSWERED)
+
+**Task:** SP3-08 (StreakBadge component)
+**Answered by:** Tech Lead | **Date:** 2026-04-12
+
+**Answer: Option A — CSS pulse animation.**
+
+Simple `scale(1) → scale(1.1) → scale(1)` on a 2s loop for active streaks. Gray static flame for zero/broken streak. Low effort, visually rewarding, easy for the designer to replace. Don't overthink it — 3 lines of CSS.
+
+---
+
+## D3-Q10 — Dashboard layout: How should the new components be arranged? (ANSWERED)
+
+**Task:** SP3-09 (Dashboard with real data)
+**Answered by:** Tech Lead | **Date:** 2026-04-12
+
+**Answer: Option A — Vertical stack. Streak badge most prominent.**
+
+Layout top to bottom:
+1. User name + avatar + LevelBadge (header row)
+2. **StreakBadge** (full width, large — this is the North Star metric)
+3. **XPBar** (full width, progress toward next level)
+4. Today's Activity card (questions answered, correct count)
+5. Buy Streak Freeze button (only shows if user has >= 50 XP)
+
+Vertical stack is the only layout that works well at 375px with all this content. Each section gets full width and breathing room.
+
+---
+
+## D3-Q11 — FeedbackModal: How should XP earned be displayed? (ANSWERED)
+
+**Task:** Related to SP3-10 (note 7 in kanban)
+**Answered by:** Tech Lead | **Date:** 2026-04-12
+
+**Answer: Option A — Inline with the result heading.**
+
+"Correct!" on one line, "+10 XP" in smaller colored text right below. Same for wrong: "Wrong" then "+2 XP". Simple, immediate, no animation complexity. The XP feels like a reward the moment you see the result.
+
+---
+
+## D3-Q12 — Timezone header: What header name should the frontend use? (ANSWERED)
+
+**Task:** SP3-09, SP3-11 (note 4 in kanban)
+**Answered by:** Tech Lead | **Date:** 2026-04-12
+
+**Answer: `X-Timezone` header. Send it on ALL authenticated API calls.**
+
+Value: `Intl.DateTimeFormat().resolvedOptions().timeZone` (e.g., `"America/Sao_Paulo"`).
+
+Send it on:
+- `GET /api/quiz` — so the server knows "today" for streak checks
+- `POST /api/answer` — so daily activity records use the correct date
+- `GET /api/user` — so the server returns "today's activity" for the right day
+
+Create a small helper (e.g., `src/lib/api.ts`) that wraps `fetch` and automatically adds the `X-Timezone` header to every API call. This avoids repeating the header in every `fetch()`. Dev 1 will read the same header on the backend — you're both aligned on the name.
