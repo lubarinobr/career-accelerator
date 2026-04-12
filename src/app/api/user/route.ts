@@ -7,6 +7,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { validateTimezone } from "@/lib/validation";
 import { calculateLevel } from "@/lib/xp";
 
 export async function GET(request: Request) {
@@ -38,7 +39,7 @@ export async function GET(request: Request) {
   // Streak freeze auto-apply (D2-S3-Q3 + D2-S3-Q7)
   // If user missed exactly 1 day and has freezes available, consume one.
   // This runs on dashboard load so the user sees their streak preserved immediately.
-  const timezone = request.headers.get("x-timezone") || "UTC";
+  const timezone = validateTimezone(request.headers.get("x-timezone"));
   const todayStr = new Date().toLocaleDateString("en-CA", {
     timeZone: timezone,
   }); // YYYY-MM-DD

@@ -10,6 +10,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { generateFeedback } from "@/lib/llm";
 import { calculateStreak, getLocalDate } from "@/lib/streak";
+import { validateTimezone, isValidUUID, isValidOption } from "@/lib/validation";
 import { calculateAnswerXP, calculateLessonBonusXP } from "@/lib/xp";
 
 const LESSON_SIZE = 5;
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
   }
 
   const userId = session.user.id;
-  const timezone = request.headers.get("X-Timezone") || "UTC";
+  const timezone = validateTimezone(request.headers.get("X-Timezone"));
 
   let body: AnswerRequest;
   try {
@@ -39,7 +40,14 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!["A", "B", "C", "D"].includes(selectedOption)) {
+  if (typeof questionId !== "string" || !isValidUUID(questionId)) {
+    return NextResponse.json(
+      { error: "questionId must be a valid UUID" },
+      { status: 400 },
+    );
+  }
+
+  if (typeof selectedOption !== "string" || !isValidOption(selectedOption)) {
     return NextResponse.json(
       { error: "selectedOption must be A, B, C, or D" },
       { status: 400 },

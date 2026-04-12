@@ -1,6 +1,9 @@
+"use server";
+
 // SP2-07 — Claude API client wrapper
 // Thin wrapper: prompt in, text out. Error handling + retries via SDK.
 // Used by batch generation script (Dev 1) and answer feedback (Dev 1 SP2-06).
+// SECURITY: "use server" prevents accidental client-side import (would leak ANTHROPIC_API_KEY).
 
 import Anthropic from "@anthropic-ai/sdk";
 
