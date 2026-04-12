@@ -31,6 +31,7 @@ export function QuizFlow() {
   const [results, setResults] = useState<QuestionResult[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [combo, setCombo] = useState(0);
 
   const currentQuestion = questions[currentIndex] ?? null;
   const totalQuestions = questions.length;
@@ -42,6 +43,7 @@ export function QuizFlow() {
     setResults([]);
     setSelectedOption(null);
     setAnswerResult(null);
+    setCombo(0);
 
     try {
       const res = await api("/api/quiz");
@@ -95,6 +97,14 @@ export function QuizFlow() {
       }
       const result: AnswerResponse = await res.json();
       setAnswerResult(result);
+
+      // Update combo
+      if (result.isCorrect) {
+        setCombo((prev) => prev + 1);
+      } else {
+        setCombo(0);
+      }
+
       setPhase("feedback");
     } catch {
       setErrorMessage("Failed to submit answer. Please try again.");
@@ -203,6 +213,7 @@ export function QuizFlow() {
       <FeedbackModal
         result={answerResult}
         questionText={currentQuestion.questionText}
+        combo={combo}
         onNext={handleNext}
       />
     );
@@ -213,7 +224,7 @@ export function QuizFlow() {
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50">
-      {/* Top bar: X close + progress */}
+      {/* Top bar: X close + progress + combo indicator */}
       <div className="flex items-center gap-3 px-4 pt-4">
         <button
           type="button"
@@ -238,21 +249,29 @@ export function QuizFlow() {
         <div className="flex-1">
           <ProgressBar current={currentIndex} total={totalQuestions} />
         </div>
+        {combo >= 2 && (
+          <div className="animate-combo-pop flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 shadow">
+            <span className="text-xs">🔥</span>
+            <span className="text-xs font-black text-white">{combo}x</span>
+          </div>
+        )}
       </div>
 
-      {/* Quiz card with options */}
-      <QuizCard question={currentQuestion}>
-        {currentQuestion.options.map((option) => (
-          <OptionButton
-            key={option.key}
-            optionKey={option.key}
-            text={option.text}
-            state={getOptionState(option.key)}
-            disabled={!!answerResult}
-            onSelect={handleSelectOption}
-          />
-        ))}
-      </QuizCard>
+      {/* Hot streak glow on quiz card area */}
+      <div className={combo >= 3 ? "animate-fire-glow mx-4 mt-2 rounded-2xl" : ""}>
+        <QuizCard question={currentQuestion}>
+          {currentQuestion.options.map((option) => (
+            <OptionButton
+              key={option.key}
+              optionKey={option.key}
+              text={option.text}
+              state={getOptionState(option.key)}
+              disabled={!!answerResult}
+              onSelect={handleSelectOption}
+            />
+          ))}
+        </QuizCard>
+      </div>
 
       {/* Check button (bottom anchored) */}
       <div className="sticky bottom-0 bg-gradient-to-t from-gray-50 via-gray-50 p-4 pb-8">

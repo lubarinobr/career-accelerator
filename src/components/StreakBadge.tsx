@@ -6,12 +6,26 @@ interface StreakBadgeProps {
 }
 
 export function StreakBadge({ currentStreak, isActive }: StreakBadgeProps) {
+  const isAtRisk = !isActive && currentStreak > 0;
+
   return (
-    <div className="flex items-center gap-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+    <div
+      className={`flex items-center gap-4 rounded-xl p-5 shadow-sm ring-1 ${
+        isAtRisk
+          ? "animate-urgent-pulse bg-red-50 ring-red-200"
+          : "bg-white ring-gray-100"
+      }`}
+    >
       {/* Flame icon */}
       <div className={isActive ? "animate-pulse-flame" : ""}>
         <svg
-          className={`h-12 w-12 ${isActive ? "text-orange-500" : "text-gray-300"}`}
+          className={`h-12 w-12 ${
+            isAtRisk
+              ? "text-red-400"
+              : isActive
+                ? "text-orange-500"
+                : "text-gray-300"
+          }`}
           viewBox="0 0 24 24"
           fill="currentColor"
         >
@@ -19,12 +33,18 @@ export function StreakBadge({ currentStreak, isActive }: StreakBadgeProps) {
         </svg>
       </div>
 
-      <div>
+      <div className="flex-1">
         <p className="text-3xl font-bold text-gray-900">{currentStreak}</p>
-        <p className="text-sm text-gray-500">
-          {currentStreak === 1 ? "day streak" : "day streak"}
-        </p>
+        <p className="text-sm text-gray-500">day streak</p>
       </div>
+
+      {/* Urgency warning */}
+      {isAtRisk && (
+        <div className="rounded-lg bg-red-500 px-3 py-1.5">
+          <p className="text-xs font-bold text-white">AT RISK!</p>
+          <p className="text-[10px] text-red-100">Practice now</p>
+        </div>
+      )}
     </div>
   );
 }

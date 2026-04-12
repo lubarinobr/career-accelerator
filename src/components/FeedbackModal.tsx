@@ -1,29 +1,68 @@
 "use client";
 
+import { useEffect, useState, useRef } from "react";
+
 import type { AnswerResponse } from "@/types";
+
+import { Confetti } from "@/components/Confetti";
 
 interface FeedbackModalProps {
   result: AnswerResponse;
   questionText: string;
+  combo: number;
   onNext: () => void;
+}
+
+function useAnimatedCounter(target: number, duration = 800) {
+  const [value, setValue] = useState(0);
+  const frameRef = useRef<number>(0);
+
+  useEffect(() => {
+    const start = performance.now();
+    const animate = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(target * eased));
+      if (progress < 1) {
+        frameRef.current = requestAnimationFrame(animate);
+      }
+    };
+    frameRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameRef.current);
+  }, [target, duration]);
+
+  return value;
 }
 
 export function FeedbackModal({
   result,
   questionText,
+  combo,
   onNext,
 }: FeedbackModalProps) {
   const isCorrect = result.isCorrect;
+  const [showFlyup, setShowFlyup] = useState(true);
+  const animatedXp = useAnimatedCounter(result.xpEarned, 600);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowFlyup(false), 1200);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div
-      className={`flex min-h-screen flex-col ${isCorrect ? "bg-green-50" : "bg-red-50"}`}
+      className={`flex min-h-screen flex-col ${isCorrect ? "bg-green-50" : "bg-red-50"} ${!isCorrect ? "animate-shake" : ""}`}
     >
+      {/* Confetti on correct answers */}
+      {isCorrect && <Confetti count={combo >= 3 ? 100 : 50} />}
+
       <div className="flex flex-1 flex-col px-4 pt-12">
-        {/* Result icon + text */}
-        <div className="flex items-center gap-3">
+        {/* Result icon + text + XP */}
+        <div className="relative flex items-center gap-3">
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-full ${isCorrect ? "bg-green-500" : "bg-red-500"}`}
+            className={`flex h-12 w-12 items-center justify-center rounded-full animate-bounce-in ${isCorrect ? "bg-green-500" : "bg-red-500"}`}
           >
             {isCorrect ? (
               <svg
@@ -59,17 +98,44 @@ export function FeedbackModal({
             <h2
               className={`text-2xl font-bold ${isCorrect ? "text-green-700" : "text-red-700"}`}
             >
-              {isCorrect ? "Correct!" : "Wrong"}
+              {isCorrect
+                ? combo >= 5
+                  ? "UNSTOPPABLE!"
+                  : combo >= 3
+                    ? "On Fire!"
+                    : combo >= 2
+                      ? "Nice Combo!"
+                      : "Correct!"
+                : "Wrong"}
             </h2>
             {result.xpEarned > 0 && (
               <p
-                className={`text-sm font-semibold ${isCorrect ? "text-green-600" : "text-red-600"}`}
+                className={`text-sm font-bold animate-xp-glow ${isCorrect ? "text-yellow-500" : "text-red-600"}`}
               >
-                +{result.xpEarned} XP
+                +{animatedXp} XP
               </p>
             )}
           </div>
+
+          {/* XP flyup */}
+          {showFlyup && result.xpEarned > 0 && (
+            <span className="animate-xp-flyup absolute -top-2 right-4 text-2xl font-black text-yellow-400">
+              +{result.xpEarned}
+            </span>
+          )}
         </div>
+
+        {/* Combo badge */}
+        {isCorrect && combo >= 2 && (
+          <div className="mt-4 flex justify-center">
+            <div className="animate-combo-pop inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 shadow-lg">
+              <span className="text-lg">🔥</span>
+              <span className="text-sm font-black tracking-wide text-white">
+                {combo}x COMBO
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Question reminder */}
         <p className="mt-6 text-sm text-gray-500">{questionText}</p>
@@ -85,7 +151,7 @@ export function FeedbackModal({
         )}
 
         {/* Explanation */}
-        <div className="mt-6 rounded-xl bg-white p-4 shadow-sm">
+        <div className="animate-slide-up mt-6 rounded-xl bg-white p-4 shadow-sm">
           <h3 className="text-sm font-semibold text-gray-500 uppercase">
             Explanation
           </h3>
@@ -96,7 +162,10 @@ export function FeedbackModal({
 
         {/* AI Feedback (wrong answers only, nullable) */}
         {result.aiFeedback && (
-          <div className="mt-4 rounded-xl bg-white p-4 shadow-sm">
+          <div
+            className="animate-slide-up mt-4 rounded-xl bg-white p-4 shadow-sm"
+            style={{ animationDelay: "0.15s", opacity: 0 }}
+          >
             <h3 className="text-sm font-semibold text-gray-500 uppercase">
               AI Tutor
             </h3>
