@@ -161,39 +161,31 @@ _No tasks ready for testing._
 
 ---
 
-**SP1-13 — Deploy to Vercel (staging)**
-- **Assignee:** Dev 1
+~~**SP1-13 — Deploy to Vercel (staging)**~~ **DONE**
+- **Assignee:** CEO + Tech Lead
 - **Priority:** P1
-- **Depends on:** SP1-12 (needs PWA config) + all Dev 2 tasks should be merged to `main` for a complete deploy.
-- **Blocks:** SP1-14 (smoke test) — **SYNC-3: Notify Dev 2 when deploy is live if Dev 2 is already waiting.**
-- **Description:** Connect GitHub repo to Vercel. Configure environment variables on Vercel (all from `.env.local.example`). Set `NEXTAUTH_URL` to the Vercel staging URL. Verify build passes. Verify Google OAuth works on the deployed URL (requires adding Vercel URL to Google OAuth authorized redirect URIs).
-- **Acceptance Criteria:** App accessible via `https://<project>.vercel.app`. Google login works. Dashboard shows user info. No console errors.
+- **Completed:** 2026-04-12
+- **Result:** App live at `https://career-accelerator-lemon.vercel.app`. Vercel account configured by CEO. Env vars set. Google OAuth credentials created. Redirect URI added for production URL.
 
 ---
 
-**SP1-14 — End-to-end smoke test**
+~~**SP1-14 — End-to-end smoke test**~~ **DONE**
 - **Assignee:** Both
 - **Priority:** P0
-- **Depends on:** SP1-13 + SP1-11 — **SYNC-3: Both devs must have all tasks DONE. Last one to finish triggers the smoke test.**
-- **Blocks:** None — this is the final task of Sprint 1.
-- **Description:** Both devs test the full flow on mobile browser: Open Vercel URL → see login page → sign in with Google → redirected to dashboard → see name + avatar + placeholders → tap Quiz tab → see placeholder → tap Dashboard tab → back to dashboard. Report any bugs.
-- **Acceptance Criteria:** Full flow works on Chrome Android and Chrome Desktop. No broken routes, no auth errors, no layout issues.
+- **Completed:** 2026-04-12
+- **Result:** Full flow tested on live Vercel URL. Login page loads with app name + tagline + Google button. Google OAuth works. Dashboard shows user name + avatar + placeholder stats (0 days, 0 XP, Intern). Bottom nav switches between Dashboard and Quiz. Quiz shows "Coming in Sprint 2". Auth guard redirects unauthenticated users to login. All tests PASS.
 
 ---
-
-### DOING
-_No tasks in progress._
-
-### READY TO TEST
-_No tasks ready for testing._
 
 ### DONE
 - **SP1-07** — Auth session provider & route guard (Dev 1, 2026-04-12) — **SYNC-2 delivered**
 - **SP1-08** — Login page UI (Dev 1, 2026-04-12)
 - **SP1-09** — Dashboard page shell (Dev 2, 2026-04-12)
 - **SP1-10** — Bottom navigation bar (Dev 2, 2026-04-12)
-- **SP1-11** — Quiz page shell (Dev 2, 2026-04-12) — **SYNC-3: Dev 2 side complete**
+- **SP1-11** — Quiz page shell (Dev 2, 2026-04-12)
 - **SP1-12** — PWA configuration (Dev 1, 2026-04-12)
+- **SP1-13** — Deploy to Vercel (CEO + Tech Lead, 2026-04-12) — `https://career-accelerator-lemon.vercel.app`
+- **SP1-14** — End-to-end smoke test (Both, 2026-04-12) — ALL TESTS PASS
 
 ---
 

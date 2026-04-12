@@ -38,24 +38,62 @@
 - Implemented singleton in `src/lib/db.ts` using `PrismaPg` adapter with `pg.Pool`, hot-reload safe via `globalThis`
 - **SYNC-1 delivered** — notified Dev 1 they are unblocked for SP1-05 (auth)
 
-**6. Kanban Updated**
-- Moved SP1-02, SP1-03, SP1-04 to DONE with completion dates and results
+**6. Tech Lead Review — Action Item Fixed**
+- Tech Lead flagged missing IPv4/Session Pooler documentation in `.env.local.example` (see `dev2/tech-lead-review-week1.md`)
+- Updated `.env.local.example` with clear instructions for IPv4 vs IPv6 connections, Session Pooler usage, and what `DATABASE_URL` vs `DIRECT_URL` are for
+
+**7. SYNC-2 Received — Week 2 Tasks Started**
+- Dev 1 completed SP1-05 (auth), SP1-06 (env vars), SP1-07 (route guard), SP1-08 (login page) — all on same day
+- Reviewed Dev 1's auth implementation: JWT strategy, `prisma.user.upsert()` in signIn callback, `session.user.id` exposes DB UUID (as agreed in D2-Q7)
+
+**8. SP1-09 — Dashboard Page Shell (DONE)**
+- Server component using `auth()` to get session
+- Displays user name + Google avatar using `next/image` (added `lh3.googleusercontent.com` to `next.config.ts` remote patterns)
+- 3 placeholder stat cards in a responsive grid: Streak (0), XP (0), Level (Intern)
+- `pb-20` padding to clear the fixed bottom nav
+
+**9. SP1-10 — Bottom Navigation Bar (DONE)**
+- Client component using `usePathname()` for active tab detection
+- Fixed bottom bar with Dashboard and Quiz tabs
+- SVG outline icons (Heroicons-style grid and question mark)
+- Active tab: blue-600, inactive: gray-400
+- Included in both `/dashboard` and `/quiz` pages
+
+**10. SP1-11 — Quiz Page Shell (DONE)**
+- Server component with auth guard (redirect to `/login` if no session)
+- Placeholder icon + "Coming in Sprint 2" message
+- Bottom nav included and linking correctly
+
+**11. SP1-14 — End-to-End Smoke Test (DONE)**
+- Verified login page loads on Vercel: app name, tagline, Google button — PASS
+- Verified auth guard: `/dashboard` without session redirects to `/login` — PASS
+- CEO ran full interactive flow on phone: Google login, dashboard with name + avatar + stats, bottom nav switching, quiz placeholder — ALL PASS
+- Initial 500 error on `/api/auth/error` was a Vercel env var config issue, resolved by CEO
+
+**12. Kanban Updated**
+- All Sprint 1 tasks marked DONE with completion dates and results
+- SP1-14 closed — Sprint 1 complete
 
 ### Blockers
 None.
 
-### Waiting on
-- **SYNC-2:** Dev 1 to complete SP1-07 (route guard) before I can start SP1-09 (dashboard shell)
-
 ### Unexpected findings
 - **Prisma 7 breaking changes:** The architecture doc and common tutorials reference Prisma 5/6 patterns. Prisma 7.7.0 (installed via latest npm) requires `prisma.config.ts` for connection URLs and Driver Adapters for client instantiation. Both are significant departures from previous versions. Dev 1 should be aware when building auth — the Prisma client import works the same (`import { prisma } from "@/lib/db"`), but the underlying setup is different.
-- **Supabase IPv4:** Free tier direct connections are IPv6-only. Any dev on an IPv4 network must use Session Pooler. This should be documented in `.env.local.example` for onboarding.
+- **Supabase IPv4:** Free tier direct connections are IPv6-only. Any dev on an IPv4 network must use Session Pooler. This should be documented in `.env.local.example` for onboarding. (Fixed after Tech Lead review.)
+- **Next.js 16 `middleware` deprecation:** Build warns that `middleware.ts` is deprecated in favor of `proxy`. Not breaking for now, but Dev 1 should be aware for Sprint 2.
 
 ---
 
-## Day 2-5 — Monday to Thursday, 2026-04-13 to 2026-04-17
+## Sprint 1 Summary
 
-Waiting for SYNC-2 (SP1-07 merge by Dev 1). Using idle time to:
-- Review Dev 1's PRs when they come in
-- Research Week 2 tasks: dashboard layout patterns, bottom nav implementation in Next.js App Router
-- Read Auth.js v5 docs to understand the session object shape I'll consume in SP1-09
+| Task | Status | Date |
+|:-----|:-------|:-----|
+| SP1-02 — Supabase setup | DONE | 2026-04-12 |
+| SP1-03 — Prisma schema | DONE | 2026-04-12 |
+| SP1-04 — Prisma client singleton | DONE | 2026-04-12 |
+| SP1-09 — Dashboard page shell | DONE | 2026-04-12 |
+| SP1-10 — Bottom navigation bar | DONE | 2026-04-12 |
+| SP1-11 — Quiz page shell | DONE | 2026-04-12 |
+| SP1-14 — Smoke test (joint) | DONE | 2026-04-12 |
+
+**All 7 tasks completed. Sprint 1 finished. Ready for Sprint 2.**
