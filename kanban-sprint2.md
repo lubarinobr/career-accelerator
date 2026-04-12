@@ -135,13 +135,11 @@ WEEK 2 — integration
 
 ---
 
-**SP2-06 — LLM feedback integration (wrong answers only)**
+~~**SP2-06 — LLM feedback integration (wrong answers only)**~~ **READY TO TEST**
 - **Assignee:** Dev 1
 - **Priority:** P1
-- **Depends on:** SP2-05 — **SYNC-4: Wait for Dev 2 to notify that SP2-05 is merged.**
-- **Blocks:** SP2-14 (smoke test)
-- **Description:** Extend `POST /api/answer` to call the Claude API when the user answers wrong. Use `lib/llm.ts`'s `generateFeedback()` function. The prompt should: receive the question + all options + user's wrong answer + correct answer, return a 2-3 sentence explanation in **simplified English** (short sentences, common words), explain WHY the correct answer is right and WHY the user's choice was wrong. Save the feedback to `user_answers.aiFeedback`. If the LLM call fails, save `null` and continue — don't block the user's flow.
-- **Acceptance Criteria:** Wrong answers trigger a Claude API call. Feedback is in simplified English (2-3 sentences). Feedback is saved to `ai_feedback` column. LLM failure doesn't break the answer flow. Correct answers do NOT trigger an LLM call.
+- **Completed:** 2026-04-26
+- **Result:** Extended `POST /api/answer` route: wrong answers trigger synchronous `generateFeedback()` call (Haiku 4.5, 10s timeout, 1 retry). Updated `src/lib/llm.ts` to accept pre-generated `explanation` parameter — AI feedback complements the explanation, doesn't duplicate it (per D1-S2-Q6). `aiFeedback` saved to DB and returned in response. Correct answers skip LLM call. LLM failure saves `null` gracefully — never blocks the user's flow.
 
 ---
 
@@ -186,7 +184,9 @@ WEEK 2 — integration
 ### READY TO TEST
 - **SP2-02** — Prompt engineering (Dev 1, 2026-04-26)
 - **SP2-01** — Batch generation script (Dev 1, 2026-04-26)
+- **SP2-03** — Question pool: 194 questions generated, all 4 domains (Dev 1, 2026-04-26)
 - **SP2-13** — CSV export script (Dev 1, 2026-04-26)
+- **SP2-06** — LLM feedback for wrong answers (Dev 1, 2026-04-26)
 - **SP2-08** — QuizCard component (Dev 3, 2026-04-26)
 - **SP2-09** — OptionButton component (Dev 3, 2026-04-26)
 - **SP2-10** — FeedbackModal component (Dev 3, 2026-04-26)

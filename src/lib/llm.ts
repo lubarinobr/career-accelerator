@@ -68,6 +68,7 @@ export async function generateFeedback(
   options: { key: string; text: string }[],
   correctOption: string,
   userAnswer: string,
+  explanation?: string,
   llmOptions?: LLMOptions
 ): Promise<string | null> {
   try {
@@ -76,6 +77,11 @@ export async function generateFeedback(
       timeout: llmOptions?.timeout ?? 10_000,
     });
 
+    // Include pre-generated explanation so AI feedback complements it (per D1-S2-Q6)
+    const explanationBlock = explanation
+      ? `\nExisting explanation: ${explanation}\n\nGiven the explanation above, tell the student in simplified English (2-3 short sentences) why their specific choice was wrong and what they should remember. Do not repeat the existing explanation — add something new and specific to their wrong choice.`
+      : `\nExplain in 2-3 short sentences using simple English why the correct answer is right and why the student's choice was wrong.`;
+
     const prompt = `You are an AWS Cloud Practitioner tutor. A student answered a question wrong.
 
 Question: ${questionText}
@@ -83,12 +89,9 @@ Options:
 ${options.map((o) => `${o.key}) ${o.text}`).join("\n")}
 Correct answer: ${correctOption}
 Student's answer: ${userAnswer}
+${explanationBlock}
 
-Explain in 2-3 short sentences using simple English:
-1. Why the correct answer is right
-2. Why the student's choice was wrong
-
-Be direct and helpful. No greetings or filler.`;
+Be direct and helpful. Use simple words and short sentences. No greetings or filler.`;
 
     const response = await client.messages.create({
       model: resolveModel(llmOptions?.model ?? "feedback"),

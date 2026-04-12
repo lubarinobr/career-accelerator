@@ -1,12 +1,14 @@
-// SP2-05 — POST /api/answer
+// SP2-05 + SP2-06 — POST /api/answer
 // Receives { questionId, selectedOption }, saves to user_answers.
 // Returns { isCorrect, correctOption, selectedOption, explanation, aiFeedback }.
-// xpEarned is 0 for now (Sprint 3). aiFeedback is null (Sprint 2 SP2-06 adds it).
+// xpEarned is 0 for now (Sprint 3).
+// SP2-06: On wrong answers, calls Claude (Haiku) for personalized feedback.
 // Duplicate answers return the existing answer (idempotent, per D2-S2-Q6).
 
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { generateFeedback } from "@/lib/llm";
 import type { AnswerRequest, AnswerResponse } from "@/types";
 
 export async function POST(request: Request) {
@@ -69,6 +71,19 @@ export async function POST(request: Request) {
   // Save the answer
   const isCorrect = selectedOption === question.correctOption;
 
+  // SP2-06: Generate AI feedback for wrong answers (synchronous, per D1-S2-Q5)
+  let aiFeedback: string | null = null;
+  if (!isCorrect) {
+    const options = question.options as { key: string; text: string }[];
+    aiFeedback = await generateFeedback(
+      question.questionText,
+      options,
+      question.correctOption,
+      selectedOption,
+      question.explanation
+    );
+  }
+
   const userAnswer = await prisma.userAnswer.create({
     data: {
       userId,
@@ -76,7 +91,7 @@ export async function POST(request: Request) {
       selectedOption,
       isCorrect,
       xpEarned: 0, // XP calculation deferred to Sprint 3 (per Q12)
-      aiFeedback: null, // LLM feedback added by Dev 1 in SP2-06
+      aiFeedback,
     },
   });
 
