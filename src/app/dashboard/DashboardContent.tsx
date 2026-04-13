@@ -125,20 +125,31 @@ export function DashboardContent() {
           <h3 className="text-sm font-semibold text-gray-500 uppercase">
             Today
           </h3>
-          {stats.todayActivity ? (
-            <div className="mt-2 flex gap-6">
-              <div>
-                <p className="text-2xl font-bold text-gray-900">
-                  {stats.todayActivity.questionsAnswered}
-                </p>
-                <p className="text-xs text-gray-500">questions</p>
+          {stats.todayActivity && stats.todayActivity.questionsAnswered > 0 ? (
+            <div className="mt-2">
+              <div className="flex gap-6">
+                <div>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {stats.todayActivity.questionsAnswered}
+                  </p>
+                  <p className="text-xs text-gray-500">questions</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-green-600">
+                    {stats.todayActivity.correctCount}
+                  </p>
+                  <p className="text-xs text-gray-500">correct</p>
+                </div>
+                <div>
+                  <p className={`text-2xl font-bold ${stats.todayActivity.xpEarned < 0 ? "text-amber-500" : "text-green-600"}`}>
+                    {stats.todayActivity.xpEarned > 0 ? "+" : ""}{stats.todayActivity.xpEarned}
+                  </p>
+                  <p className="text-xs text-gray-500">XP today</p>
+                </div>
               </div>
-              <div>
-                <p className="text-2xl font-bold text-green-600">
-                  {stats.todayActivity.correctCount}
-                </p>
-                <p className="text-xs text-gray-500">correct</p>
-              </div>
+              {stats.todayActivity.xpEarned < 0 && (
+                <p className="mt-2 text-xs text-amber-500">Tough day — come back stronger tomorrow!</p>
+              )}
             </div>
           ) : (
             <p className="mt-2 text-sm text-gray-400">

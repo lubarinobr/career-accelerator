@@ -158,6 +158,8 @@ The following questions were raised after reviewing `roadmap.md`.
 
 Agreed with the Tech Lead's recommendation. After a user has answered all questions, recycle them after 30 days since last answered. This is the simplest approach, keeps the streak alive, and repetition is actually good for certification study (spaced repetition effect). The query in S2-04 should prioritize unanswered questions first, then oldest-answered questions past the 30-day cooldown. No new UI needed — the user just keeps getting questions seamlessly.
 
+**Updated 2026-04-13:** The question pool for MVP is **60 questions** (not 600). 600 was excessive for an MVP scope. With a smaller pool, the recycle strategy becomes even more important to keep the experience fresh.
+
 ---
 
 ## Q12 - Sprint 2/3 XP Overlap Clarification (ANSWERED) — TO P.O.
@@ -192,15 +194,9 @@ Sprint 3 adds the gamification layer on top. This is cleaner and avoids rework. 
 **Asked by:** Tech Lead | **Date:** 2026-04-12
 **Answered by:** P.O. | **Date:** 2026-04-12
 
-**Answer: Yes — export a CSV for spot-checking. The CEO will review.**
+**Answer: No — no manual review process for MVP.**
 
-The Tech Lead is right, incorrect questions are worse than no questions for certification study. The plan:
-
-1. After batch generation, export all 600 questions to a CSV (question, options, correct answer, explanation, domain, difficulty).
-2. The CEO (who is the target user and is studying for this cert) will spot-check at least 10-20% (~60-120 questions).
-3. Any flagged questions get removed or corrected manually before going live.
-
-This does NOT block Sprint 2 development — the batch script (S2-01) and quiz flow (S2-04, S2-05) can be built with a smaller test set of 20-30 questions. The full 600 pool and review happen in parallel. Add a small task to S2 for the CSV export functionality.
+**Updated 2026-04-13:** With only 60 questions in the MVP pool, a formal CSV export and review process is unnecessary overhead. The CEO trusts the LLM output quality for this scope. If quality issues surface during actual usage, they can be fixed on the spot. No CSV export task needed in any sprint.
 
 ---
 
@@ -209,6 +205,8 @@ This does NOT block Sprint 2 development — the batch script (S2-01) and quiz f
 **Asked by:** Tech Lead | **Date:** 2026-04-12
 **Answered by:** P.O. | **Date:** 2026-04-12
 
-**Answer: Option B — Complete at least 1 full lesson (5 questions) = active day.**
+**Answer: 1 question = active day (default).**
 
-This aligns with the North Star metric ("a 5-minute session every single day"). One question is too easy and doesn't build a real habit. Five questions is the minimum meaningful engagement — it takes ~3-5 minutes and ensures the user actually practiced. The streak badge should not light up until the user finishes a full lesson that day.
+**Updated 2026-04-13:** The minimum activity to count as an active day for streaks is **1 question answered**, set as the default. This has already been implemented. Keeping the bar low encourages daily engagement — even a single question maintains the habit loop. This is the MVP default; a configurable threshold can be considered for v2.
+
+> **Note:** Questions from 2026-04-13 onward are in `13-04-2026-questions.md`.

@@ -119,7 +119,8 @@ export async function GET(request: Request) {
       ? {
           questionsAnswered: todayActivity.questionsAnswered,
           correctCount: todayActivity.correctCount,
+          xpEarned: todayActivity.xpEarned,
         }
-      : { questionsAnswered: 0, correctCount: 0 },
+      : { questionsAnswered: 0, correctCount: 0, xpEarned: 0 },
   });
 }

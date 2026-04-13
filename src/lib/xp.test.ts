@@ -1,20 +1,63 @@
+// S5-08 — Unit tests for difficulty-based XP scoring + power-curve leveling
+
 import { describe, it, expect } from "vitest";
 
 import {
   calculateAnswerXP,
+  clampXp,
   calculateLessonBonusXP,
   calculateStreakFreezeCost,
   canAffordStreakFreeze,
   calculateLevel,
 } from "./xp";
 
-describe("XP calculation", () => {
-  it("awards 10 XP for a correct answer", () => {
-    expect(calculateAnswerXP(true)).toBe(10);
+describe("Difficulty-based XP calculation (S5-01)", () => {
+  // Correct answers
+  it("awards +5 XP for correct easy answer", () => {
+    expect(calculateAnswerXP(true, "easy")).toBe(5);
   });
 
-  it("awards 2 XP for a wrong answer", () => {
-    expect(calculateAnswerXP(false)).toBe(2);
+  it("awards +15 XP for correct medium answer", () => {
+    expect(calculateAnswerXP(true, "medium")).toBe(15);
+  });
+
+  it("awards +40 XP for correct hard answer", () => {
+    expect(calculateAnswerXP(true, "hard")).toBe(40);
+  });
+
+  // Wrong answers (negative)
+  it("deducts -1 XP for wrong easy answer", () => {
+    expect(calculateAnswerXP(false, "easy")).toBe(-1);
+  });
+
+  it("deducts -3 XP for wrong medium answer", () => {
+    expect(calculateAnswerXP(false, "medium")).toBe(-3);
+  });
+
+  it("deducts -8 XP for wrong hard answer", () => {
+    expect(calculateAnswerXP(false, "hard")).toBe(-8);
+  });
+});
+
+describe("XP floor clamping (S5-01)", () => {
+  it("clamps to 0 when delta would push below zero", () => {
+    expect(clampXp(3, -8)).toBe(0);
+  });
+
+  it("applies delta normally when result is positive", () => {
+    expect(clampXp(100, -8)).toBe(92);
+  });
+
+  it("clamps to 0 when totalXp is 0 and delta is negative", () => {
+    expect(clampXp(0, -1)).toBe(0);
+  });
+
+  it("allows positive delta from 0", () => {
+    expect(clampXp(0, 5)).toBe(5);
+  });
+
+  it("handles exact zero result", () => {
+    expect(clampXp(8, -8)).toBe(0);
   });
 });
 
@@ -36,7 +79,7 @@ describe("Lesson bonus XP", () => {
   });
 });
 
-describe("Streak freeze cost", () => {
+describe("Streak freeze cost (S5-04 verification)", () => {
   it("returns 50 as the freeze cost", () => {
     expect(calculateStreakFreezeCost()).toBe(50);
   });
@@ -58,76 +101,106 @@ describe("Streak freeze cost", () => {
   });
 });
 
-describe("Leveling system", () => {
-  it("returns Intern at 0 XP", () => {
+describe("Power-curve leveling system (S5-03)", () => {
+  // Level 1 — Intern (0 XP)
+  it("returns level 1 Intern at 0 XP", () => {
     const level = calculateLevel(0);
     expect(level.level).toBe(1);
     expect(level.title).toBe("Intern");
     expect(level.currentXp).toBe(0);
-    expect(level.nextLevelXp).toBe(100);
   });
 
-  it("returns Intern at 99 XP (just before Junior)", () => {
-    const level = calculateLevel(99);
+  // Level 2 — Apprentice (50 XP)
+  it("returns level 2 Apprentice at 50 XP", () => {
+    const level = calculateLevel(50);
+    expect(level.level).toBe(2);
+    expect(level.title).toBe("Apprentice");
+  });
+
+  it("returns level 1 at 49 XP (just before Apprentice)", () => {
+    const level = calculateLevel(49);
     expect(level.level).toBe(1);
     expect(level.title).toBe("Intern");
-    expect(level.currentXp).toBe(99);
-    expect(level.nextLevelXp).toBe(100);
+    expect(level.currentXp).toBe(49);
   });
 
-  it("returns Junior at exactly 100 XP", () => {
-    const level = calculateLevel(100);
-    expect(level.level).toBe(2);
+  // Level 3 — Junior (174 XP)
+  it("returns level 3 Junior at 174 XP", () => {
+    const level = calculateLevel(174);
+    expect(level.level).toBe(3);
     expect(level.title).toBe("Junior");
-    expect(level.currentXp).toBe(0);
-    expect(level.nextLevelXp).toBe(200);
   });
 
-  it("returns Mid-level at 300 XP", () => {
-    const level = calculateLevel(300);
+  it("returns level 3 Junior at 175 XP (still within level 3)", () => {
+    const level = calculateLevel(175);
     expect(level.level).toBe(3);
-    expect(level.title).toBe("Mid-level");
-    expect(level.currentXp).toBe(0);
-    expect(level.nextLevelXp).toBe(300);
+    expect(level.title).toBe("Junior");
   });
 
-  it("returns Senior at 600 XP", () => {
-    const level = calculateLevel(600);
-    expect(level.level).toBe(4);
-    expect(level.title).toBe("Senior");
-    expect(level.currentXp).toBe(0);
-    expect(level.nextLevelXp).toBe(400);
-  });
-
-  it("returns Specialist at 1000 XP", () => {
-    const level = calculateLevel(1000);
+  // Level 5 — Senior
+  it("returns level 5 Senior at 630 XP", () => {
+    const level = calculateLevel(630);
     expect(level.level).toBe(5);
-    expect(level.title).toBe("Specialist");
-    expect(level.currentXp).toBe(0);
-    expect(level.nextLevelXp).toBe(500);
+    expect(level.title).toBe("Senior");
   });
 
-  it("returns Certified at 1500 XP (max level)", () => {
-    const level = calculateLevel(1500);
-    expect(level.level).toBe(6);
+  // Level 10 — Certified (2858 XP)
+  it("returns level 10 Certified at 2858 XP", () => {
+    const level = calculateLevel(2858);
+    expect(level.level).toBe(10);
     expect(level.title).toBe("Certified");
-    expect(level.currentXp).toBe(0);
-    expect(level.nextLevelXp).toBe(0); // max level
   });
 
-  it("returns Certified at 2000 XP (beyond max)", () => {
-    const level = calculateLevel(2000);
-    expect(level.level).toBe(6);
-    expect(level.title).toBe("Certified");
-    expect(level.currentXp).toBe(500);
-    expect(level.nextLevelXp).toBe(0);
+  // Between-milestone title format
+  // Formula: xpForLevel(N) = floor(50 * (N-1)^1.8)
+  it("returns 'Certified (Lv. 14)' for level 14", () => {
+    const xpNeeded = Math.floor(50 * Math.pow(13, 1.8)); // level 14 = 50*(14-1)^1.8
+    const level = calculateLevel(xpNeeded);
+    expect(level.level).toBe(14);
+    expect(level.title).toBe("Certified (Lv. 14)");
   });
 
-  it("returns correct progress within a level", () => {
-    const level = calculateLevel(450);
-    expect(level.level).toBe(3);
-    expect(level.title).toBe("Mid-level");
-    expect(level.currentXp).toBe(150); // 450 - 300
-    expect(level.nextLevelXp).toBe(300); // 600 - 300
+  it("returns 'Certified (Lv. 11)' for level 11", () => {
+    const xpNeeded = Math.floor(50 * Math.pow(10, 1.8)); // level 11 = 50*(11-1)^1.8
+    const level = calculateLevel(xpNeeded);
+    expect(level.level).toBe(11);
+    expect(level.title).toBe("Certified (Lv. 11)");
+  });
+
+  // Milestone level 25 — AWS Warrior
+  it("returns AWS Warrior at level 25", () => {
+    const xpNeeded = Math.floor(50 * Math.pow(24, 1.8)); // level 25 = 50*(25-1)^1.8
+    const level = calculateLevel(xpNeeded);
+    expect(level.level).toBe(25);
+    expect(level.title).toBe("AWS Warrior");
+  });
+
+  // No level cap — level 200 works
+  it("handles level 200 with no cap", () => {
+    const xpNeeded = Math.floor(50 * Math.pow(199, 1.8)); // level 200 = 50*(200-1)^1.8
+    const level = calculateLevel(xpNeeded);
+    expect(level.level).toBe(200);
+    expect(level.title).toContain("Grandmaster");
+    expect(level.title).toContain("Lv. 200");
+  });
+
+  // nextLevelXp shows correct XP needed
+  it("returns correct nextLevelXp for level 1", () => {
+    const level = calculateLevel(0);
+    // nextLevelXp = xpForLevel(2) - xpForLevel(1) = 50 - 0 = 50
+    expect(level.nextLevelXp).toBe(50);
+  });
+
+  it("returns correct currentXp progress within a level", () => {
+    const level = calculateLevel(60);
+    expect(level.level).toBe(2);
+    expect(level.currentXp).toBe(10); // 60 - 50 = 10
+  });
+
+  // Boundary: level 2 to level 3
+  it("returns level 2 at 173 XP (boundary test)", () => {
+    const level = calculateLevel(173);
+    expect(level.level).toBe(2);
+    expect(level.title).toBe("Apprentice");
   });
 });

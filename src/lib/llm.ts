@@ -62,10 +62,60 @@ export async function generateQuestions(
 }
 
 /**
- * Generate feedback for a wrong answer. Used by answer API (Dev 1 SP2-06).
- * Returns a 2-3 sentence explanation in simplified English, or null on failure.
+ * V2-01 — Socratic Feedback System
+ * Feedback style adapts based on user level:
+ *   - Beginner (levels 1-3): Simplified English, direct explanations
+ *   - Intermediate (levels 4-6): Mix of explanation + one guiding question
+ *   - Advanced (levels 7+): Technical English, Socratic questioning
+ *
+ * Returns a 2-3 sentence explanation, or null on failure.
  * Never throws — LLM failure must not block the user's quiz flow.
  */
+import { getFeedbackLevel, type FeedbackLevel } from "@/lib/feedback-level";
+
+function buildFeedbackPrompt(
+  questionText: string,
+  options: { key: string; text: string }[],
+  correctOption: string,
+  userAnswer: string,
+  feedbackLevel: FeedbackLevel,
+  explanation?: string,
+): string {
+  const optionsBlock = options.map((o) => `${o.key}) ${o.text}`).join("\n");
+
+  const styleInstructions: Record<FeedbackLevel, string> = {
+    beginner: explanation
+      ? `Existing explanation: ${explanation}\n\nThe student is a beginner. Using simplified English (short words, simple sentences), explain in 2-3 sentences why their specific choice was wrong and what they should remember. Do not repeat the existing explanation — add something new and specific to their wrong choice.`
+      : `The student is a beginner. Explain in 2-3 short sentences using simple, everyday English why the correct answer is right and why the student's choice was wrong.`,
+
+    intermediate: explanation
+      ? `Existing explanation: ${explanation}\n\nThe student has some experience. In 2-3 sentences, explain why their choice was wrong using proper AWS terminology. End with one thought-provoking question that helps them think deeper about the concept (e.g., "What would happen if...?" or "How does this relate to...?"). Do not repeat the existing explanation.`
+      : `The student has some experience. In 2-3 sentences, explain why the correct answer is right using proper AWS terminology. End with one thought-provoking question that helps them connect this concept to broader AWS knowledge.`,
+
+    advanced: explanation
+      ? `Existing explanation: ${explanation}\n\nThe student is advanced. Do NOT just explain the answer. Instead, use the Socratic method: ask 2-3 targeted questions that guide the student to understand WHY their choice was wrong and discover the correct reasoning themselves. Use technical AWS language. Reference real-world scenarios or architectural trade-offs where relevant. Do not repeat the existing explanation.`
+      : `The student is advanced. Do NOT just explain the answer. Instead, use the Socratic method: ask 2-3 targeted questions that lead the student to reason through why the correct answer is right. Use technical AWS language. Reference real-world scenarios or architectural trade-offs.`,
+  };
+
+  const roleByLevel: Record<FeedbackLevel, string> = {
+    beginner: "You are a patient AWS Cloud Practitioner tutor for beginners.",
+    intermediate: "You are an AWS Cloud Practitioner tutor for intermediate learners.",
+    advanced: "You are a senior AWS architect mentoring an advanced student using the Socratic method.",
+  };
+
+  return `${roleByLevel[feedbackLevel]} A student answered a question wrong.
+
+Question: ${questionText}
+Options:
+${optionsBlock}
+Correct answer: ${correctOption}
+Student's answer: ${userAnswer}
+
+${styleInstructions[feedbackLevel]}
+
+Be direct and helpful. No greetings or filler.`;
+}
+
 export async function generateFeedback(
   questionText: string,
   options: { key: string; text: string }[],
@@ -73,6 +123,7 @@ export async function generateFeedback(
   userAnswer: string,
   explanation?: string,
   llmOptions?: LLMOptions,
+  userLevel?: number,
 ): Promise<string | null> {
   try {
     const client = getClient({
@@ -80,21 +131,15 @@ export async function generateFeedback(
       timeout: llmOptions?.timeout ?? 10_000,
     });
 
-    // Include pre-generated explanation so AI feedback complements it (per D1-S2-Q6)
-    const explanationBlock = explanation
-      ? `\nExisting explanation: ${explanation}\n\nGiven the explanation above, tell the student in simplified English (2-3 short sentences) why their specific choice was wrong and what they should remember. Do not repeat the existing explanation — add something new and specific to their wrong choice.`
-      : `\nExplain in 2-3 short sentences using simple English why the correct answer is right and why the student's choice was wrong.`;
-
-    const prompt = `You are an AWS Cloud Practitioner tutor. A student answered a question wrong.
-
-Question: ${questionText}
-Options:
-${options.map((o) => `${o.key}) ${o.text}`).join("\n")}
-Correct answer: ${correctOption}
-Student's answer: ${userAnswer}
-${explanationBlock}
-
-Be direct and helpful. Use simple words and short sentences. No greetings or filler.`;
+    const feedbackLevel = getFeedbackLevel(userLevel ?? 1);
+    const prompt = buildFeedbackPrompt(
+      questionText,
+      options,
+      correctOption,
+      userAnswer,
+      feedbackLevel,
+      explanation,
+    );
 
     const response = await client.messages.create({
       model: resolveModel(llmOptions?.model ?? "feedback"),

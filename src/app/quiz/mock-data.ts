@@ -133,6 +133,12 @@ export async function mockSubmitAnswer(
 
   const isCorrect = selectedOption === answer.correctOption;
 
+  // Mock difficulty-based XP (Risk & Reward — Sprint 5)
+  const mockDifficultyXp = { easy: 5, medium: 15, hard: 40 };
+  const mockWrongXp = { easy: -1, medium: -3, hard: -8 };
+  const question = MOCK_QUESTIONS.find((q) => q.id === questionId);
+  const difficulty = question?.difficulty ?? "medium";
+
   return {
     isCorrect,
     correctOption: answer.correctOption,
@@ -141,7 +147,7 @@ export async function mockSubmitAnswer(
     aiFeedback: isCorrect
       ? null
       : "Think about the key characteristic that distinguishes this concept from the others. The correct answer focuses on the core definition as described in the AWS documentation.",
-    xpEarned: isCorrect ? 10 : 2,
-    totalXp: 0, // Mock — real value comes from SP3-10
+    xpEarned: isCorrect ? mockDifficultyXp[difficulty] : mockWrongXp[difficulty],
+    totalXp: 0, // Mock — real value comes from API
   };
 }

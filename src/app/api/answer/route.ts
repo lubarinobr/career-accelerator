@@ -12,7 +12,12 @@ import { generateFeedback } from "@/lib/llm";
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { calculateStreak, getLocalDate } from "@/lib/streak";
 import { validateTimezone, isValidUUID, isValidOption } from "@/lib/validation";
-import { calculateAnswerXP, calculateLessonBonusXP } from "@/lib/xp";
+import {
+  calculateAnswerXP,
+  calculateLessonBonusXP,
+  calculateLevel,
+  type Difficulty,
+} from "@/lib/xp";
 
 const LESSON_SIZE = 5;
 
@@ -101,19 +106,29 @@ export async function POST(request: Request) {
 
   const isCorrect = selectedOption === question.correctOption;
 
-  // SP3-10: Calculate XP
-  let xpEarned = calculateAnswerXP(isCorrect);
+  // S5-02: Calculate XP with difficulty-based scoring
+  let xpEarned = calculateAnswerXP(
+    isCorrect,
+    question.difficulty as Difficulty,
+  );
 
-  // SP2-06: Generate AI feedback for wrong answers
+  // SP2-06 + V2-01: Generate AI feedback for wrong answers (Socratic, level-aware)
   let aiFeedback: string | null = null;
   if (!isCorrect) {
     const options = question.options as { key: string; text: string }[];
+    const feedbackUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { totalXp: true },
+    });
+    const userLevel = feedbackUser ? calculateLevel(feedbackUser.totalXp).level : 1;
     aiFeedback = await generateFeedback(
       question.questionText,
       options,
       question.correctOption,
       selectedOption,
       question.explanation,
+      undefined,
+      userLevel,
     );
   }
 
@@ -216,11 +231,19 @@ export async function POST(request: Request) {
     }
   }
 
-  // SP3-10: Update user total XP atomically
-  const updatedUser = await prisma.user.update({
+  // S5-02: Update user total XP with floor enforcement (totalXp never below 0)
+  let updatedUser = await prisma.user.update({
     where: { id: userId },
     data: { totalXp: { increment: xpEarned } },
   });
+
+  // Clamp totalXp to 0 if negative delta pushed it below floor
+  if (updatedUser.totalXp < 0) {
+    updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { totalXp: 0 },
+    });
+  }
 
   const response: AnswerResponse = {
     isCorrect,

@@ -36,6 +36,20 @@ function useAnimatedCounter(target: number, duration = 800) {
   return value;
 }
 
+const ENCOURAGEMENTS = [
+  "Hard questions hit hard. Try again!",
+  "That's how you learn. Keep going!",
+  "The comeback is always stronger.",
+  "Almost! You'll get the next one.",
+];
+
+let encouragementIndex = 0;
+function getEncouragement(): string {
+  const msg = ENCOURAGEMENTS[encouragementIndex % ENCOURAGEMENTS.length];
+  encouragementIndex++;
+  return msg;
+}
+
 export function FeedbackModal({
   result,
   questionText,
@@ -45,6 +59,7 @@ export function FeedbackModal({
   const isCorrect = result.isCorrect;
   const [showFlyup, setShowFlyup] = useState(true);
   const animatedXp = useAnimatedCounter(result.xpEarned, 600);
+  const [encouragement] = useState(() => (!isCorrect ? getEncouragement() : ""));
 
   useEffect(() => {
     const timer = setTimeout(() => setShowFlyup(false), 1200);
@@ -108,19 +123,20 @@ export function FeedbackModal({
                       : "Correct!"
                 : "Wrong"}
             </h2>
-            {result.xpEarned > 0 && (
-              <p
-                className={`text-sm font-bold animate-xp-glow ${isCorrect ? "text-yellow-500" : "text-red-600"}`}
-              >
-                +{animatedXp} XP
-              </p>
+            <p
+              className={`text-sm font-bold animate-xp-glow ${isCorrect ? "text-yellow-500" : "text-amber-500"}`}
+            >
+              {isCorrect ? "+" : ""}{animatedXp} XP
+            </p>
+            {!isCorrect && (
+              <p className="mt-1 text-xs text-gray-400">{encouragement}</p>
             )}
           </div>
 
           {/* XP flyup */}
-          {showFlyup && result.xpEarned > 0 && (
-            <span className="animate-xp-flyup absolute -top-2 right-4 text-2xl font-black text-yellow-400">
-              +{result.xpEarned}
+          {showFlyup && (
+            <span className={`animate-xp-flyup absolute -top-2 right-4 text-2xl font-black ${isCorrect ? "text-yellow-400" : "text-amber-400"}`}>
+              {isCorrect ? "+" : ""}{result.xpEarned}
             </span>
           )}
         </div>
