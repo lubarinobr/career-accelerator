@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { canAffordStreakFreeze, calculateStreakFreezeCost } from "@/lib/xp";
 
 export async function POST() {
@@ -15,6 +16,22 @@ export async function POST() {
   }
 
   const userId = session.user.id;
+
+  // SEC-01: Rate limiting — 5 req/min per user
+  const { allowed, retryAfterSeconds } = checkRateLimit(
+    `freeze:${userId}`,
+    RATE_LIMITS.streakFreeze.maxRequests,
+    RATE_LIMITS.streakFreeze.windowMs,
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfterSeconds) },
+      },
+    );
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: userId },

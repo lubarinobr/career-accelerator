@@ -9,6 +9,7 @@ import type { AnswerRequest, AnswerResponse } from "@/types";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { generateFeedback } from "@/lib/llm";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 import { calculateStreak, getLocalDate } from "@/lib/streak";
 import { validateTimezone, isValidUUID, isValidOption } from "@/lib/validation";
 import { calculateAnswerXP, calculateLessonBonusXP } from "@/lib/xp";
@@ -22,6 +23,23 @@ export async function POST(request: Request) {
   }
 
   const userId = session.user.id;
+
+  // SEC-01: Rate limiting — 30 req/min per user
+  const { allowed, retryAfterSeconds } = checkRateLimit(
+    `answer:${userId}`,
+    RATE_LIMITS.answer.maxRequests,
+    RATE_LIMITS.answer.windowMs,
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfterSeconds) },
+      },
+    );
+  }
+
   const timezone = validateTimezone(request.headers.get("X-Timezone"));
 
   let body: AnswerRequest;

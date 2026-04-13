@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 
 import type { UserStats } from "@/types";
@@ -15,6 +16,7 @@ export function DashboardContent() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [buyingFreeze, setBuyingFreeze] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   const fetchStats = async () => {
     try {
@@ -170,6 +172,20 @@ export function DashboardContent() {
             </button>
           </div>
         </div>
+
+        {/* Sign out */}
+        <button
+          type="button"
+          onClick={() => {
+            setSigningOut(true);
+            signOut({ callbackUrl: "/login" });
+          }}
+          disabled={signingOut}
+          className="mt-6 flex min-h-[44px] w-full items-center justify-center rounded-lg border border-gray-300 bg-white py-3 text-sm font-medium text-gray-600 transition-all active:scale-[0.98]"
+        >
+          {signingOut ? "Signing out..." : "Sign Out"}
+        </button>
+
       </div>
 
       <BottomNav />

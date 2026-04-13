@@ -7,6 +7,10 @@
 
 ## 1. Core Principles
 
+### Stay in your lane
+
+Every team member executes **only** the tasks assigned to them. The Tech Lead does not write code assigned to developers. Developers do not make architecture decisions that belong to the Tech Lead. The P.O. does not assign implementation details. If a task is on your kanban, you own it. If it's not, hands off — no matter how simple it looks. Overstepping slows the team down, breaks ownership, and creates confusion about who is responsible for what.
+
 ### Ship, don't polish
 
 The goal is a working product, not perfect code. If it works, is readable, and handles the real cases — it's done. Move on.

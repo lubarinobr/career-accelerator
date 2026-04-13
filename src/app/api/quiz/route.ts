@@ -9,6 +9,7 @@ import type { QuizResponse, QuizQuestion, QuestionOption } from "@/types";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit";
 
 const QUESTIONS_PER_LESSON = 5;
 const RECYCLE_DAYS = 30;
@@ -20,6 +21,23 @@ export async function GET() {
   }
 
   const userId = session.user.id;
+
+  // SEC-01: Rate limiting — 20 req/min per user
+  const { allowed, retryAfterSeconds } = checkRateLimit(
+    `quiz:${userId}`,
+    RATE_LIMITS.quiz.maxRequests,
+    RATE_LIMITS.quiz.windowMs,
+  );
+  if (!allowed) {
+    return NextResponse.json(
+      { error: "Too many requests" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(retryAfterSeconds) },
+      },
+    );
+  }
+
   const recycleDate = new Date();
   recycleDate.setDate(recycleDate.getDate() - RECYCLE_DAYS);
 
