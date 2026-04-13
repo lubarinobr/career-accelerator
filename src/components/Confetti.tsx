@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface Particle {
   id: number;
@@ -12,6 +12,7 @@ interface Particle {
   delay: number;
   duration: number;
   drift: number;
+  isRound: boolean;
 }
 
 const COLORS = [
@@ -27,25 +28,23 @@ const COLORS = [
   "#60A5FA",
 ];
 
+function generateParticles(count: number): Particle[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: -(Math.random() * 20 + 5),
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    size: Math.random() * 8 + 4,
+    rotation: Math.random() * 360,
+    delay: Math.random() * 0.5,
+    duration: Math.random() * 2 + 1.5,
+    drift: (Math.random() - 0.5) * 40,
+    isRound: Math.random() > 0.5,
+  }));
+}
+
 export function Confetti({ count = 60 }: { count?: number }) {
-  const [particles, setParticles] = useState<Particle[]>([]);
-
-  useEffect(() => {
-    const newParticles: Particle[] = Array.from({ length: count }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: -(Math.random() * 20 + 5),
-      color: COLORS[Math.floor(Math.random() * COLORS.length)],
-      size: Math.random() * 8 + 4,
-      rotation: Math.random() * 360,
-      delay: Math.random() * 0.5,
-      duration: Math.random() * 2 + 1.5,
-      drift: (Math.random() - 0.5) * 40,
-    }));
-    setParticles(newParticles);
-  }, [count]);
-
-  if (particles.length === 0) return null;
+  const [particles] = useState(() => generateParticles(count));
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden">
@@ -59,7 +58,7 @@ export function Confetti({ count = 60 }: { count?: number }) {
             width: p.size,
             height: p.size * 0.6,
             backgroundColor: p.color,
-            borderRadius: Math.random() > 0.5 ? "50%" : "2px",
+            borderRadius: p.isRound ? "50%" : "2px",
             transform: `rotate(${p.rotation}deg)`,
             animationDelay: `${p.delay}s`,
             animationDuration: `${p.duration}s`,

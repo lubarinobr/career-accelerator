@@ -1,7 +1,7 @@
 # Sprint Roadmap — The Career Accelerator (MVP)
 
 **Author:** P.O. | **Last updated:** 2026-04-13
-**Total sprints:** 5 | **Sprint 1-3:** 2 weeks each | **Sprint 4:** 1 week | **Sprint 5:** TBD
+**Total sprints:** 5 | **Sprint 1-3:** 2 weeks each | **Sprint 4:** 1 week | **Sprint 5:** 1 week
 
 **Status Legend:** `TODO` | `IN PROGRESS` | `IN REVIEW` | `DONE`
 **Priority:** `P0` (blocker) | `P1` (must-have) | `P2` (should-have)
@@ -100,25 +100,25 @@
 
 ---
 
-## Sprint 5 — XP Scoring Overhaul: Risk & Reward (TBD)
+## Sprint 5 — XP Scoring Overhaul: Risk & Reward — DONE
 
-**Goal:** Replace the flat XP system with a bet-psychology-based scoring model that differentiates difficulty levels and creates an addictive risk/reward loop. Full spec in `po-reports/13-04-2026-xp-scoring-update.md`. Tech Lead questions in `13-04-2026-questions.md` (Q16).
+**Goal:** Replace the flat XP system with a bet-psychology-based scoring model that differentiates difficulty levels and creates an addictive risk/reward loop. Full spec in `po-reports/13-04-2026-xp-scoring-update.md`. Details in `kanban-sprint5.md`.
 
-| ID    | Task                                                                      | Priority | Status | Depends On | Acceptance Criteria                                                                                       |
-| :---- | :------------------------------------------------------------------------ | :------- | :----- | :--------- | :-------------------------------------------------------------------------------------------------------- |
-| S5-01 | Update `lib/xp.ts` — difficulty-based XP (Easy: +5/-1, Med: +15/-3, Hard: +40/-8) | P0       | TODO   | —          | `calculateAnswerXP(isCorrect, difficulty)` returns correct values. `totalXp` never goes below 0. Unit tested. |
-| S5-02 | Update `POST /api/answer` — pass difficulty to XP calculation             | P0       | TODO   | S5-01      | Answer route reads question difficulty and uses new XP formula. `xpEarned` can be negative.                |
-| S5-03 | Replace hardcoded level thresholds with power-curve formula (`floor(50 * level^1.8)`) | P0 | TODO | S5-01 | Leveling scales infinitely. Named titles at milestones (1-10, 25, 50, 100). Between milestones show "Title (Lv. N)". |
-| S5-04 | Keep Streak Freeze cost at flat 50 XP                                     | P1       | TODO   | S5-01      | Confirmed: 50 XP (~1 lesson) stays flat. No scaling with level.                                            |
-| S5-05 | Update FeedbackModal — show XP loss on wrong answers                      | P1       | TODO   | S5-02      | Correct: green "+40 XP". Wrong: amber/orange "-8 XP" with encouraging one-liner. Never red, never shame.  |
-| S5-06 | Update dashboard/XPBar for new level formula + negative daily XP          | P1       | TODO   | S5-03      | New leveling curve, progress bar scales. Negative daily XP shown honestly with encouraging framing.        |
-| S5-07 | Audit code assuming xp_earned >= 0                                        | P1       | TODO   | S5-02      | Find and fix all frontend/analytics code that assumes non-negative xp_earned values.                       |
-| S5-08 | Update unit tests for new XP values                                       | P0       | TODO   | S5-01      | All existing xp.test.ts tests updated, new tests for difficulty scaling and XP floor at 0.                 |
-| S5-09 | Smoke test — full XP journey                                              | P0       | TODO   | All        | Answer easy/medium/hard correctly and incorrectly, verify XP awards, verify level progression, verify no negative totalXp. |
+| ID    | Task                                                                      | Priority | Status | Assignee          |
+| :---- | :------------------------------------------------------------------------ | :------- | :----- | :---------------- |
+| S5-01 | Update `lib/xp.ts` — difficulty-based XP (Easy: +5/-1, Med: +15/-3, Hard: +40/-8) | P0 | DONE | Dev 1 |
+| S5-02 | Update `POST /api/answer` — pass difficulty to XP calculation             | P0       | DONE   | Dev 1             |
+| S5-03 | Replace hardcoded level thresholds with power-curve formula (`floor(50 * (level-1)^1.8)`) | P0 | DONE | Dev 1 |
+| S5-04 | Keep Streak Freeze cost at flat 50 XP                                     | P1       | DONE   | Dev 1             |
+| S5-05 | Update FeedbackModal — show XP loss on wrong answers                      | P1       | DONE   | Dev 3             |
+| S5-06 | Update dashboard/XPBar for new level formula + negative daily XP          | P1       | DONE   | Dev 3             |
+| S5-07 | Audit code assuming xp_earned >= 0                                        | P1       | DONE   | Dev 1 + Dev 3     |
+| S5-08 | Update unit tests for new XP values                                       | P0       | DONE   | Dev 1             |
+| S5-09 | Smoke test — full XP journey                                              | P0       | DONE   | Tech Lead         |
 
-> **Note:** Data migration (old S5-07) was removed — P.O. approved grandfathering existing data (Q19). Old XP stays, new answers use Risk & Reward values.
+> **Note:** Data migration was removed — P.O. approved grandfathering existing data (Q19). Old XP stays, new answers use Risk & Reward values.
 
-**Sprint 5 Definition of Done:** XP system rewards risk-taking on harder questions, punishes careless mistakes softly, levels scale infinitely via formula, and the user feels the stakes on every answer.
+**Sprint 5 Definition of Done:** XP system rewards risk-taking on harder questions, punishes careless mistakes softly, levels scale infinitely via formula, and the user feels the stakes on every answer. **ACHIEVED — 12/12 smoke test checks pass, 75 unit tests pass, build clean.**
 
 ---
 
