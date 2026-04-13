@@ -59,8 +59,9 @@ async function generateBatch(
   domain: Domain,
   difficulty: Difficulty,
   count: number,
+  topic?: string,
 ): Promise<z.infer<typeof QuestionSchema>[]> {
-  const prompt = buildQuestionPrompt(domain, difficulty, count);
+  const prompt = buildQuestionPrompt(domain, difficulty, count, topic);
 
   const response = await anthropic.messages.create({
     model: MODEL,
@@ -110,8 +111,12 @@ async function generateForDomainDifficulty(
   domain: Domain,
   difficulty: Difficulty,
   targetCount: number,
+  topic?: string,
 ) {
-  console.log(`\n--- ${domain} / ${difficulty} (target: ${targetCount}) ---`);
+  const label = topic
+    ? `${domain} / ${difficulty} / ${topic}`
+    : `${domain} / ${difficulty}`;
+  console.log(`\n--- ${label} (target: ${targetCount}) ---`);
 
   let remaining = targetCount;
   let batchNum = 0;
@@ -122,7 +127,7 @@ async function generateForDomainDifficulty(
 
     try {
       console.log(`  Batch ${batchNum}: generating ${batchCount} questions...`);
-      const questions = await generateBatch(domain, difficulty, batchCount);
+      const questions = await generateBatch(domain, difficulty, batchCount, topic);
       stats.generated += questions.length;
 
       const inserted = await insertQuestions(questions, domain, difficulty);
@@ -166,6 +171,7 @@ async function main() {
   const domainArg = getArg(args, "--domain");
   const difficultyArg = getArg(args, "--difficulty") as Difficulty | undefined;
   const countArg = getArg(args, "--count");
+  const topicArg = getArg(args, "--topic");
 
   console.log("=== Career Accelerator — Question Generator ===");
   console.log(`Model: ${MODEL}`);
@@ -173,11 +179,13 @@ async function main() {
 
   if (domainArg && difficultyArg && countArg) {
     // Targeted generation
-    console.log(`\nTargeted: ${domainArg} / ${difficultyArg} x ${countArg}`);
+    const topicLabel = topicArg ? ` / topic: ${topicArg}` : "";
+    console.log(`\nTargeted: ${domainArg} / ${difficultyArg} x ${countArg}${topicLabel}`);
     await generateForDomainDifficulty(
       domainArg as Domain,
       difficultyArg,
       parseInt(countArg),
+      topicArg,
     );
   } else {
     // Full generation: weighted distribution

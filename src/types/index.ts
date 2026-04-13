@@ -19,6 +19,7 @@ export interface QuestionOption {
 
 export interface QuizResponse {
   questions: QuizQuestion[];
+  totalXp: number;
   message?: string;
 }
 
@@ -34,8 +35,9 @@ export interface AnswerResponse {
   selectedOption: string;
   explanation: string;
   aiFeedback: string | null;
-  xpEarned: number; // S5: per-answer XP — can be negative (Risk & Reward scoring)
-  totalXp: number; // SP3-10: user's cumulative XP after this answer
+  xpEarned: number; // S5: per-answer base XP — can be negative (Risk & Reward scoring)
+  perfectBonus: number; // S6: perfect lesson bonus (20 if 5/5 correct on 5th answer, 0 otherwise)
+  totalXp: number; // SP3-10: user's cumulative XP after this answer (includes bonus)
 }
 
 // SP3-02: User API response — dashboard stats

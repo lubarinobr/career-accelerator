@@ -5,16 +5,22 @@ import { Confetti } from "@/components/Confetti";
 interface QuestionResult {
   questionText: string;
   isCorrect: boolean;
+  xpEarned: number;
+  difficulty: string;
 }
 
 interface LessonCompleteProps {
   results: QuestionResult[];
+  totalXp: number;
+  perfectBonus: number;
   onStartAnother: () => void;
   onBackToDashboard: () => void;
 }
 
 export function LessonComplete({
   results,
+  totalXp,
+  perfectBonus,
   onStartAnother,
   onBackToDashboard,
 }: LessonCompleteProps) {
@@ -23,6 +29,7 @@ export function LessonComplete({
   const isPerfect = correctCount === total;
   const isGreat = correctCount >= total * 0.8;
   const isNearMiss = correctCount === total - 1 && !isPerfect;
+  const lessonXpTotal = results.reduce((sum, r) => sum + r.xpEarned, 0) + perfectBonus;
 
   const getMessage = () => {
     if (isPerfect) return "PERFECT!";
@@ -91,14 +98,68 @@ export function LessonComplete({
           </div>
         )}
 
+        {/* XP Summary */}
+        <div
+          className="animate-slide-up mt-6 w-full rounded-2xl bg-white p-5 shadow-sm"
+          style={{ animationDelay: "0.5s", opacity: 0 }}
+        >
+          {/* Lesson XP total */}
+          <p
+            className={`text-center text-2xl font-black ${lessonXpTotal >= 0 ? "text-green-600" : "text-amber-600"}`}
+          >
+            {lessonXpTotal >= 0 ? "+" : ""}
+            {lessonXpTotal} XP
+          </p>
+
+          {/* Per-question XP breakdown */}
+          <div className="mt-4 space-y-2">
+            {results.map((result, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between text-sm"
+              >
+                <span className="capitalize text-gray-500">
+                  Q{index + 1} — {result.difficulty}
+                </span>
+                <span
+                  className={`font-semibold ${result.xpEarned >= 0 ? "text-green-600" : "text-amber-600"}`}
+                >
+                  {result.xpEarned >= 0 ? "+" : ""}
+                  {result.xpEarned}
+                </span>
+              </div>
+            ))}
+
+            {/* Perfect bonus row */}
+            {perfectBonus > 0 && (
+              <div className="flex items-center justify-between border-t border-yellow-200 pt-2 text-sm">
+                <span className="font-bold text-yellow-600">
+                  PERFECT BONUS
+                </span>
+                <span className="font-black text-yellow-600">
+                  +{perfectBonus}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* New total XP */}
+          <div className="mt-3 border-t border-gray-100 pt-3 text-center">
+            <span className="text-sm text-gray-500">Total: </span>
+            <span className="text-sm font-bold text-gray-800">
+              {totalXp} XP
+            </span>
+          </div>
+        </div>
+
         {/* Question breakdown */}
-        <div className="mt-8 w-full space-y-3">
+        <div className="mt-6 w-full space-y-3">
           {results.map((result, index) => (
             <div
               key={index}
               className="animate-slide-up flex items-start gap-3 rounded-xl bg-white p-4 shadow-sm"
               style={{
-                animationDelay: `${0.4 + index * 0.08}s`,
+                animationDelay: `${0.6 + index * 0.08}s`,
                 opacity: 0,
               }}
             >
@@ -135,9 +196,15 @@ export function LessonComplete({
                   </svg>
                 )}
               </div>
-              <p className="text-sm leading-snug text-gray-800">
+              <p className="flex-1 text-sm leading-snug text-gray-800">
                 {result.questionText}
               </p>
+              <span
+                className={`shrink-0 text-xs font-semibold ${result.xpEarned >= 0 ? "text-green-600" : "text-amber-600"}`}
+              >
+                {result.xpEarned >= 0 ? "+" : ""}
+                {result.xpEarned}
+              </span>
             </div>
           ))}
         </div>

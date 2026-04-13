@@ -58,12 +58,47 @@ The Tech Lead reviewed Q16 and came back with the leveling formula and 3 new que
 
 ---
 
+### 8. Sprint 5 (XP Scoring Overhaul) — DELIVERED
+
+Sprint 5 was fully implemented and delivered today. All 9 tasks completed:
+
+- **Dev 1** delivered S5-01 through S5-04, S5-07, S5-08 — backend XP logic, difficulty-based scoring, power-curve leveling formula, streak freeze rebalance, negative XP audit, and unit tests (75 tests passing)
+- **Dev 3** delivered S5-05, S5-06 — FeedbackModal XP loss display and dashboard/XPBar updates for new level formula + negative daily XP
+- **Tech Lead** completed S5-09 — smoke test passed 12/12 checks, build clean
+
+Additionally, Dev 1 delivered two v2 backlog items ahead of schedule:
+- **V2-01 — Socratic Feedback System:** Level-aware AI explanations (beginner/intermediate/advanced). 7 unit tests pass.
+- **V2-02 — Adaptive Difficulty:** Flow State algorithm based on recent success rate. 13 unit tests pass.
+
+---
+
+### 9. Feature Request — XP Visibility During Quiz
+
+Used the app and noticed a UX gap: the quiz screen only shows the question progress bar (2/5) but no XP total. You can't feel the bet if you can't see your stack. Also, the Lesson Complete screen shows "X/5 correct" but no XP summary.
+
+Created feature spec in `po-reports/13-04-2026-xp-visibility-update.md` and raised **Q20** to Tech Lead in `13-04-2026-questions.md` with two requirements:
+
+1. **Show current total XP next to the progress bar** on the quiz screen, updating in real-time as the user answers
+2. **Show XP summary on Lesson Complete screen** — total earned, per-question breakdown, perfect bonus, new total
+
+### 10. Sprint 6 (XP Visibility) — DELIVERED
+
+Sprint 6 was implemented and delivered the same day. All 5 tasks completed:
+
+- **Tech Lead** delivered S6-01 — added `totalXp` + `perfectBonus` to quiz/answer API response (Dev 1 and Dev 2 on vacation)
+- **Dev 3** delivered S6-02, S6-03, S6-04 — XP counter in quiz top bar, per-question XP/difficulty tracking, Lesson Complete XP breakdown with difficulty labels
+- **Tech Lead** completed S6-05 — smoke test passed 9/9 checks, build clean
+
+Answered **Q21** (difficulty labels in XP breakdown): option (b) — show difficulty + XP (e.g., "Hard +40") to reinforce the Risk & Reward story.
+
+---
+
 ## Current Status
 
-- **Tech Lead questions Q1-Q19:** ALL ANSWERED (no blockers)
-- **Sprints 1-4:** COMPLETE
-- **Sprint 5 (XP Overhaul):** 9 tasks, all TODO — ready for Tech Lead to begin
-- **MVP:** DELIVERED, entering improvement phase
+- **Tech Lead questions Q1-Q21:** ALL ANSWERED (no blockers)
+- **Sprints 1-6:** ALL COMPLETE
+- **MVP + XP Overhaul + XP Visibility:** DELIVERED
+- **v2 backlog:** V2-01, V2-02, V2-08 done, 5 items remaining (TTS, Focus Mode, AI Notifications, Offline Mode, Additional Certs)
 
 ---
 
@@ -81,3 +116,6 @@ The Tech Lead reviewed Q16 and came back with the leveling formula and 3 new que
 | Amber for losses, not red | Challenge the user, never shame them |
 | Grandfather existing data | Pre-launch, minimal data, hostile to reset |
 | Flat 50 XP streak freeze | One lesson's worth, don't punish loyal users |
+| Approve V2-01 and V2-02 delivery in Sprint 5 | Dev 1 had capacity, features were ready, no reason to hold back |
+| XP must be visible on quiz screen | Bet psychology requires seeing your stack — can't feel stakes without it |
+| Lesson Complete needs XP summary | Payoff moment — user must know exactly what they earned |

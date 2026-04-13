@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 
 import type { OptionState } from "@/components/OptionButton";
 import type { QuizQuestion, QuizResponse, AnswerResponse } from "@/types";
@@ -18,6 +18,8 @@ type QuizPhase = "loading" | "question" | "feedback" | "complete" | "error";
 interface QuestionResult {
   questionText: string;
   isCorrect: boolean;
+  xpEarned: number;
+  difficulty: string;
 }
 
 export function QuizFlow() {
@@ -32,6 +34,10 @@ export function QuizFlow() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [combo, setCombo] = useState(0);
+  const [totalXp, setTotalXp] = useState(0);
+  const [perfectBonus, setPerfectBonus] = useState(0);
+  const [xpFlash, setXpFlash] = useState<"positive" | "negative" | null>(null);
+  const xpPopKey = useRef(0);
 
   const currentQuestion = questions[currentIndex] ?? null;
   const totalQuestions = questions.length;
@@ -44,6 +50,8 @@ export function QuizFlow() {
     setSelectedOption(null);
     setAnswerResult(null);
     setCombo(0);
+    setTotalXp(0);
+    setPerfectBonus(0);
 
     try {
       const res = await api("/api/quiz");
@@ -61,6 +69,7 @@ export function QuizFlow() {
         return;
       }
       setQuestions(data.questions);
+      setTotalXp(data.totalXp);
       setPhase("question");
     } catch {
       setErrorMessage("Failed to load questions. Please try again.");
@@ -97,6 +106,15 @@ export function QuizFlow() {
       }
       const result: AnswerResponse = await res.json();
       setAnswerResult(result);
+      setTotalXp(result.totalXp);
+      if (result.perfectBonus > 0) {
+        setPerfectBonus(result.perfectBonus);
+      }
+
+      // Trigger XP counter animation
+      xpPopKey.current += 1;
+      setXpFlash(result.xpEarned >= 0 ? "positive" : "negative");
+      setTimeout(() => setXpFlash(null), 600);
 
       // Update combo
       if (result.isCorrect) {
@@ -122,6 +140,8 @@ export function QuizFlow() {
       {
         questionText: currentQuestion.questionText,
         isCorrect: answerResult.isCorrect,
+        xpEarned: answerResult.xpEarned,
+        difficulty: currentQuestion.difficulty,
       },
     ]);
 
@@ -194,6 +214,8 @@ export function QuizFlow() {
             {
               questionText: currentQuestion.questionText,
               isCorrect: answerResult.isCorrect,
+              xpEarned: answerResult.xpEarned,
+              difficulty: currentQuestion.difficulty,
             },
           ]
         : results;
@@ -201,6 +223,8 @@ export function QuizFlow() {
     return (
       <LessonComplete
         results={finalResults}
+        totalXp={totalXp}
+        perfectBonus={perfectBonus}
         onStartAnother={loadQuestions}
         onBackToDashboard={handleClose}
       />
@@ -249,6 +273,18 @@ export function QuizFlow() {
         <div className="flex-1">
           <ProgressBar current={currentIndex} total={totalQuestions} />
         </div>
+        <span
+          key={xpPopKey.current}
+          className={`text-sm font-semibold whitespace-nowrap ${
+            xpFlash === "positive"
+              ? "text-green-500 animate-xp-pop"
+              : xpFlash === "negative"
+                ? "text-amber-500 animate-xp-pop"
+                : "text-gray-600"
+          } transition-colors duration-300`}
+        >
+          {totalXp} XP
+        </span>
         {combo >= 2 && (
           <div className="animate-combo-pop flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-red-500 px-3 py-1 shadow">
             <span className="text-xs">🔥</span>

@@ -46,6 +46,13 @@ export async function GET() {
     );
   }
 
+  // S6-01: Fetch user's current totalXp for quiz screen display
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { totalXp: true },
+  });
+  const totalXp = user?.totalXp ?? 0;
+
   const recycleDate = new Date();
   recycleDate.setDate(recycleDate.getDate() - RECYCLE_DAYS);
 
@@ -192,6 +199,7 @@ export async function GET() {
   if (allQuestions.length === 0) {
     const response: QuizResponse = {
       questions: [],
+      totalXp,
       message: "You've answered all available questions! Check back later.",
     };
     return NextResponse.json(response);
@@ -202,6 +210,7 @@ export async function GET() {
 
   const response: QuizResponse = {
     questions: shuffled,
+    totalXp,
   };
 
   return NextResponse.json(response);

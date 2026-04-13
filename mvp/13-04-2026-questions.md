@@ -181,3 +181,97 @@ Good work on the leveling formula. The power curve with BASE=50 and EXPONENT=1.8
 Streak Freeze at flat 50 XP — approved. The "one lesson's worth" framing makes sense. Don't punish loyal users.
 
 On A3 Concern 3 (audit code assuming xp_earned >= 0) — add that as a subtask under S5-02. Don't let it slip through.
+
+---
+
+## Q20 - XP Visibility During Quiz (OPEN) — TO TECH LEAD
+
+**Asked by:** P.O. | **Date:** 2026-04-13
+
+I used the app today and noticed I can't see my XP total while taking a quiz. I only see the question progress bar (2/5). The Risk & Reward system is built on bet psychology — but you can't feel the stakes if you can't see your stack.
+
+Full spec is in `po-reports/13-04-2026-xp-visibility-update.md`.
+
+### P.O. Requirements (the *what*):
+
+**Change 1 — Show current total XP on the quiz screen:**
+- Display the user's actual XP number (e.g., "312 XP") next to the existing question progress bar
+- Update it in real-time as the user answers questions during the lesson
+- The progress bar stays as-is — this is an addition, not a replacement
+
+**Change 2 — Show XP summary on Lesson Complete screen:**
+- Total XP earned this lesson (e.g., "+62 XP")
+- Per-question breakdown (e.g., "+5, +15, -8, +40, +15")
+- Perfect bonus if applicable ("+20 PERFECT BONUS")
+- New total XP after the lesson
+
+### Questions for the Tech Lead:
+
+1. Is the user's current total XP already available in the quiz flow, or does it need an extra API call?
+2. How many tasks do you estimate for this? I'd like it in a sprint-sized scope.
+3. Any concerns about real-time XP updates on the quiz screen (e.g., optimistic updates vs. waiting for the API response)?
+
+---
+
+## Tech Lead Answers — Q20 — 2026-04-13
+
+### A1 — XP Availability in the Quiz Flow
+
+**Partially available.** Here's the current state:
+
+- **After each answer:** `POST /api/answer` already returns `totalXp` (the user's cumulative XP after that answer) and `xpEarned` (the delta for that specific answer). This data is in `AnswerResponse` (`src/types/index.ts:38-39`). So mid-lesson updates are free — no extra API call.
+- **At quiz start:** `GET /api/quiz` only returns questions (`QuizResponse` has no user data). The user's starting XP is unknown until they answer the first question.
+
+**Fix:** Add `totalXp` to the `GET /api/quiz` response. One extra DB read (`user.totalXp`) — we already have the authenticated session in that route. No extra API call from the frontend needed.
+
+### A2 — Task Estimate
+
+**5 tasks, all small. I'd scope this at 2-3 days max.**
+
+| # | Task | Assignee | Size |
+|---|---|---|---|
+| S6-01 | Add `totalXp` to `GET /api/quiz` response | Dev 1 (backend) | Small — 1 field added to response |
+| S6-02 | Track XP state in `QuizFlow` + show XP counter in quiz top bar | Dev 3 (frontend) | Medium — new state, new UI element |
+| S6-03 | Track `xpEarned` per question in `QuestionResult` | Dev 3 (frontend) | Small — add field to interface, save in `handleNext` |
+| S6-04 | Update `LessonComplete` to show XP breakdown | Dev 3 (frontend) | Medium — new section with per-question XP, totals, perfect bonus |
+| S6-05 | Smoke test — XP visibility | Tech Lead | Small — verify both changes |
+
+### A3 — Optimistic Updates vs. API Response
+
+**No optimistic updates needed. The current flow is already correct for this.**
+
+Here's why: the quiz flow already waits for the `POST /api/answer` response before transitioning to the feedback modal (`QuizFlow.tsx:98-108`). The response includes the updated `totalXp`. So the XP counter in the top bar updates the moment the user sees their feedback — that's the *right* moment psychologically. Showing the XP change before the "Correct!" / "Wrong" reveal would spoil the suspense.
+
+Flow:
+1. User opens quiz → `GET /api/quiz` returns questions + `totalXp` → XP counter shows starting balance
+2. User answers → `POST /api/answer` → response has `xpEarned` + new `totalXp`
+3. Feedback modal appears → XP counter in top bar updates to new `totalXp`
+4. User taps "Next" → sees updated balance before the next question
+
+No race conditions, no stale data, no extra API calls.
+
+### Question to P.O. (Q21)
+
+The Lesson Complete XP breakdown shows per-question results. The spec example shows: `"+5, +15, -8, +40, +15"`.
+
+**Should each entry include the question's difficulty label?** For example:
+
+- **(a)** Just XP: `+5, +15, -8, +40, +15`
+- **(b)** XP + difficulty: `Easy +5, Medium +15, Hard -8, Hard +40, Medium +15`
+
+Option (b) reinforces the Risk & Reward framing — the user sees that hard questions are the high-stakes bets. Option (a) is cleaner but loses that context. Which do you prefer?
+
+---
+
+## Q21 — Difficulty Labels in XP Breakdown (ANSWERED)
+
+**Asked by:** Tech Lead | **Date:** 2026-04-13
+**Answered by:** P.O. | **Date:** 2026-04-13
+
+**Answer: Option (b) — XP + difficulty label.**
+
+The whole point of Risk & Reward is that the user sees which bets paid off. Showing "Hard +40" is the payoff moment — "I took the hard question and it paid off." Showing just "+40" strips the context. The difficulty label IS the story.
+
+Example: `Easy +5, Medium +15, Hard -8, Hard +40, Medium +15`
+
+This reinforces the gamification loop: the user reviews their lesson, sees the hard questions were the big swings, and next time they'll chase those high-stakes bets.

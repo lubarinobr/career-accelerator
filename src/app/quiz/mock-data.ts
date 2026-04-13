@@ -148,6 +148,7 @@ export async function mockSubmitAnswer(
       ? null
       : "Think about the key characteristic that distinguishes this concept from the others. The correct answer focuses on the core definition as described in the AWS documentation.",
     xpEarned: isCorrect ? mockDifficultyXp[difficulty] : mockWrongXp[difficulty],
+    perfectBonus: 0, // Mock — real value comes from API
     totalXp: 0, // Mock — real value comes from API
   };
 }

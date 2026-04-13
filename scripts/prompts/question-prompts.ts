@@ -56,13 +56,18 @@ export function buildQuestionPrompt(
   domain: Domain,
   difficulty: Difficulty,
   count: number,
+  topic?: string,
 ): string {
+  const topicInstruction = topic
+    ? `\nSub-topic focus: ALL ${count} questions must be specifically about ${topic}. Do not generate questions about other sub-topics.`
+    : "";
+
   return `You are an expert AWS certification instructor creating practice questions for the AWS Cloud Practitioner (CLF-C02) exam.
 
 ${DIFFICULTY_INSTRUCTIONS[difficulty]}
 
 Domain: ${domain}
-${DOMAIN_TOPICS[domain]}
+${DOMAIN_TOPICS[domain]}${topicInstruction}
 
 Generate exactly ${count} unique multiple-choice questions. Each question must have exactly 4 options (A, B, C, D) with exactly 1 correct answer.
 

@@ -99,6 +99,7 @@ export async function POST(request: Request) {
       explanation: question.explanation,
       aiFeedback: existingAnswer.aiFeedback,
       xpEarned: existingAnswer.xpEarned,
+      perfectBonus: 0, // S6: bonus was already applied on first submission
       totalXp: user?.totalXp ?? 0,
     };
     return NextResponse.json(response);
@@ -166,7 +167,9 @@ export async function POST(request: Request) {
     },
   });
 
-  // SP3-10: Check for perfect lesson bonus on every 5th answer
+  // SP3-10 + S6: Check for perfect lesson bonus on every 5th answer
+  // S6: Track bonus separately so frontend can display it as a distinct line item
+  let perfectBonus = 0;
   if (dailyActivity.questionsAnswered % LESSON_SIZE === 0) {
     const lastAnswers = await prisma.userAnswer.findMany({
       where: { userId },
@@ -176,13 +179,12 @@ export async function POST(request: Request) {
     });
 
     const correctInLesson = lastAnswers.filter((a) => a.isCorrect).length;
-    const bonus = calculateLessonBonusXP(correctInLesson, LESSON_SIZE);
+    perfectBonus = calculateLessonBonusXP(correctInLesson, LESSON_SIZE);
 
-    if (bonus > 0) {
-      xpEarned += bonus;
+    if (perfectBonus > 0) {
       await prisma.dailyActivity.update({
         where: { userId_activityDate: { userId, activityDate: todayDate } },
-        data: { xpEarned: { increment: bonus } },
+        data: { xpEarned: { increment: perfectBonus } },
       });
     }
 
@@ -232,9 +234,11 @@ export async function POST(request: Request) {
   }
 
   // S5-02: Update user total XP with floor enforcement (totalXp never below 0)
+  // S6: xpEarned is base XP only; bonus is tracked separately but both go to totalXp
+  const totalDelta = xpEarned + perfectBonus;
   let updatedUser = await prisma.user.update({
     where: { id: userId },
-    data: { totalXp: { increment: xpEarned } },
+    data: { totalXp: { increment: totalDelta } },
   });
 
   // Clamp totalXp to 0 if negative delta pushed it below floor
@@ -252,6 +256,7 @@ export async function POST(request: Request) {
     explanation: question.explanation,
     aiFeedback,
     xpEarned,
+    perfectBonus,
     totalXp: updatedUser.totalXp,
   };
 

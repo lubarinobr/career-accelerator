@@ -1,7 +1,7 @@
 # Sprint Roadmap — The Career Accelerator (MVP)
 
 **Author:** P.O. | **Last updated:** 2026-04-13
-**Total sprints:** 5 | **Sprint 1-3:** 2 weeks each | **Sprint 4:** 1 week | **Sprint 5:** 1 week
+**Total sprints:** 6 | **Sprint 1-3:** 2 weeks each | **Sprint 4:** 1 week | **Sprint 5:** 1 week | **Sprint 6:** 3 days
 
 **Status Legend:** `TODO` | `IN PROGRESS` | `IN REVIEW` | `DONE`
 **Priority:** `P0` (blocker) | `P1` (must-have) | `P2` (should-have)
@@ -122,16 +122,35 @@
 
 ---
 
+## Sprint 6 — XP Visibility During Quiz — DONE
+
+**Goal:** Show the user's XP balance during quizzes and provide a full XP breakdown on the Lesson Complete screen. Details in `kanban-sprint6.md`.
+
+| ID    | Task                                                    | Priority | Status | Assignee  |
+| :---- | :------------------------------------------------------ | :------- | :----- | :-------- |
+| S6-01 | Add `totalXp` + `perfectBonus` to quiz/answer response | P0       | DONE   | Tech Lead |
+| S6-02 | Show XP counter in quiz top bar                         | P0       | DONE   | Dev 3     |
+| S6-03 | Track xpEarned/difficulty per question in QuizFlow      | P1       | DONE   | Dev 3     |
+| S6-04 | Update LessonComplete to show XP breakdown              | P0       | DONE   | Dev 3     |
+| S6-05 | Smoke test — XP visibility                              | P0       | DONE   | Tech Lead |
+
+> **Note:** Dev 1 and Dev 2 on vacation. Tech Lead took the backend task (S6-01). `perfectBonus` was separated from `xpEarned` in the answer route to give the frontend clean data (see D3-Q13).
+
+**Sprint 6 Definition of Done:** User sees their XP balance during quizzes, XP updates in real-time after each answer, and the Lesson Complete screen shows a full XP breakdown with difficulty labels, perfect bonus, and new total. **ACHIEVED — 9/9 smoke test checks pass, 75 unit tests pass, build clean.**
+
+---
+
 ## Post-MVP Backlog (v2 — Not Scheduled)
 
 These features were intentionally deferred from the MVP. Listed here for future planning.
 
-| ID    | Feature                                | Notes                                                                       |
-| :---- | :------------------------------------- | :-------------------------------------------------------------------------- |
-| V2-01 | Socratic Feedback System (Feature 1.2) | Richer AI tutoring on wrong answers                                         |
-| V2-02 | Adaptive Difficulty (Feature 1.3)      | Adjust question difficulty based on user performance                        |
-| V2-03 | Text-to-Speech (Feature 3.2)           | Audio for questions and explanations                                        |
-| V2-04 | Focus Mode (Feature 3.3)               | Timer-based locked sessions                                                 |
-| V2-05 | AI-Driven Notifications (Feature 2.2)  | Push notifications with tone settings (Encouraging/Balanced/Drill Sergeant) |
-| V2-06 | Offline Mode                           | Pre-cache questions for offline use, sync on reconnect                      |
-| V2-07 | Additional Certifications              | Azure, PMP, etc.                                                            |
+| ID    | Feature                                | Status   | Notes                                                                       |
+| :---- | :------------------------------------- | :------- | :-------------------------------------------------------------------------- |
+| V2-01 | Socratic Feedback System (Feature 1.2) | **DONE** | Implemented by Dev 1 during Sprint 5. Level-aware feedback (beginner/intermediate/advanced). `src/lib/feedback-level.ts`, updated `src/lib/llm.ts` + answer route. 7 unit tests pass. |
+| V2-02 | Adaptive Difficulty (Feature 1.3)      | **DONE** | Implemented by Dev 1 during Sprint 5. Flow State algorithm based on recent success rate. `src/lib/adaptive.ts`, updated quiz route. 13 unit tests pass. |
+| V2-08 | XP Visibility During Quiz              | **DONE** | Implemented in Sprint 6. XP counter in quiz top bar, XP breakdown on Lesson Complete. `kanban-sprint6.md`. |
+| V2-03 | Text-to-Speech (Feature 3.2)           | TODO     | Audio for questions and explanations                                        |
+| V2-04 | Focus Mode (Feature 3.3)               | TODO     | Timer-based locked sessions                                                 |
+| V2-05 | AI-Driven Notifications (Feature 2.2)  | TODO     | Push notifications with tone settings (Encouraging/Balanced/Drill Sergeant) |
+| V2-06 | Offline Mode                           | TODO     | Pre-cache questions for offline use, sync on reconnect                      |
+| V2-07 | Additional Certifications              | TODO     | Azure, PMP, etc.                                                            |
