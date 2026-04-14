@@ -119,3 +119,4 @@ Answered **Q21** (difficulty labels in XP breakdown): option (b) — show diffic
 | Approve V2-01 and V2-02 delivery in Sprint 5 | Dev 1 had capacity, features were ready, no reason to hold back |
 | XP must be visible on quiz screen | Bet psychology requires seeing your stack — can't feel stakes without it |
 | Lesson Complete needs XP summary | Payoff moment — user must know exactly what they earned |
+| Difficulty labels in XP breakdown (Q21) | "Hard +40" tells the story — the label IS the bet psychology |

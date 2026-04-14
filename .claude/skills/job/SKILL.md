@@ -41,7 +41,7 @@ Read ALL three of these files — do not skip any:
 
 1. `job/roles.md` — find the section matching the role for responsibilities and boundaries
 2. `job/job-roles.md` — find the job description section matching the role for detailed duties and skills
-3. `mvp/about.md` — the project vision, problem statement, and north star metric
+3. `about.md` — the project vision, problem statement, and north star metric
 
 ## 3. Internalize the role
 
