@@ -21,8 +21,8 @@ All planning, management, and team documentation for the MVP is archived in the 
 - mvp/architecture.md - technical architecture
 - mvp/roadmap.md - sprint roadmap and kanban board
 - mvp/questions.md - Tech Lead <-> P.O. questions (all answered)
-- mvp/roles.md - role definitions
-- mvp/job-roles.md - job descriptions
+- job/roles.md - role definitions
+- job/job-roles.md - job descriptions
 - mvp/dev-workflow.md - developer workflow guide
 - mvp/kanban-sprint1.md, kanban-sprint2.md, kanban-sprint3.md, kanban-sprint4.md, kanban-sprint5.md, kanban-sprint6.md - sprint kanbans
 - mvp/test-plan-sprint1.md - test script
